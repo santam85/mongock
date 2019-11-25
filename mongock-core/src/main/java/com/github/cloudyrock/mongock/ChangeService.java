@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import static com.github.cloudyrock.mongock.StringUtils.hasText;
 import static java.util.Arrays.asList;
+
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.reflections.Reflections;
@@ -55,8 +56,7 @@ class ChangeService {
    * Indicates the changeLogs end version
    * </p>
    *
-   * @param endVersion
-   *          version to upgrading upgrading with (lower than this version)
+   * @param endVersion version to upgrading upgrading with (lower than this version)
    */
   // Implementation note: This has been added, replacing constructor, to be
   // able to inject this service as dependency
@@ -69,8 +69,7 @@ class ChangeService {
    * Indicates the changeLogs start version
    * </p>
    *
-   * @param startVersion
-   *          version to start upgrading from (greater equals this version)
+   * @param startVersion version to start upgrading from (greater equals this version)
    */
   // Implementation note: This has been added, replacing constructor, to be
   // able to inject this service as dependency
@@ -82,42 +81,32 @@ class ChangeService {
   List<Class<?>> fetchChangeLogs() {
     Reflections reflections = new Reflections(changeLogsBasePackage);
     List<Class<?>> changeLogs = new ArrayList<>(reflections.getTypesAnnotatedWith(ChangeLog.class)); // TODO remove dependency, do own method
-
     Collections.sort(changeLogs, new ChangeLogComparator());
-
     return changeLogs;
   }
 
   @SuppressWarnings("unchecked")
   List<Method> fetchChangeSets(final Class<?> type) throws MongockException {
     final List<Method> changeSets = filterChangeSetAnnotation(asList(type.getDeclaredMethods()));
-
     Collections.sort(changeSets, new ChangeSetComparator());
-
     return changeSets;
   }
 
   boolean isRunAlwaysChangeSet(Method changesetMethod) {
-    if (changesetMethod.isAnnotationPresent(ChangeSet.class)) {
-      ChangeSet annotation = changesetMethod.getAnnotation(ChangeSet.class);
-      return annotation.runAlways();
-    } else {
-      return false;
-    }
+    return changesetMethod.isAnnotationPresent(ChangeSet.class) && changesetMethod.getAnnotation(ChangeSet.class).runAlways();
   }
 
-  ChangeEntry createChangeEntry(Method changesetMethod) {
+  Optional<ChangeEntry> createChangeEntry(Method changesetMethod) {
     if (changesetMethod.isAnnotationPresent(ChangeSet.class)) {
       ChangeSet annotation = changesetMethod.getAnnotation(ChangeSet.class);
-
-      return new ChangeEntry(
+      return Optional.of(new ChangeEntry(
           annotation.id(),
           annotation.author(),
           new Date(),
           changesetMethod.getDeclaringClass().getName(),
-          changesetMethod.getName());
+          changesetMethod.getName()));
     } else {
-      return null;
+      return Optional.empty();
     }
   }
 

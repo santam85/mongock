@@ -109,7 +109,7 @@ public class Mongock implements Closeable {
         changelogInstance = changeService.createInstance(changelogClass);
         List<Method> changesetMethods = changeService.fetchChangeSets(changelogInstance.getClass());
         for (Method changesetMethod : changesetMethods) {
-          executeIfNewOrRunAlways(changelogInstance, changesetMethod, changeService.createChangeEntry(changesetMethod));
+          executeIfNewOrRunAlways(changelogInstance, changesetMethod);
         }
 
       } catch (NoSuchMethodException | IllegalAccessException | InstantiationException e) {
@@ -122,21 +122,32 @@ public class Mongock implements Closeable {
     }
   }
 
-  private void executeIfNewOrRunAlways(Object changelogInstance, Method changesetMethod, ChangeEntry changeEntry) throws IllegalAccessException, InvocationTargetException {
-    try {
-      if (changeEntryRepository.isNewChange(changeEntry)) {
-        executeChangeSetMethod(changesetMethod, changelogInstance);
-        changeEntryRepository.save(changeEntry);
-        logger.info("APPLIED - {}", changeEntry);
-      } else if (changeService.isRunAlwaysChangeSet(changesetMethod)) {
-        executeChangeSetMethod(changesetMethod, changelogInstance);
-        logger.info("RE-APPLIED - {}", changeEntry);
-      } else {
-        logger.info("PASSED OVER - {}", changeEntry);
-      }
-    } catch (MongockException e) {
-      logger.error(e.getMessage(), e);
-    }
+  private void executeIfNewOrRunAlways(Object changelogInstance, Method changeSetMethod) {
+      changeService.createChangeEntry(changeSetMethod).ifPresent(changeEntry -> {
+
+
+        try{
+          if (changeEntryRepository.isNewChange(changeEntry)) {
+            executeChangeSetMethodAndTrack(changeSetMethod, changelogInstance, changeEntry);
+            changeEntryRepository.save(changeEntry);
+            logger.info("APPLIED - {}", changeEntry);
+          } else if (changeService.isRunAlwaysChangeSet(changeSetMethod)) {
+            executeChangeSetMethodAndTrack(changeSetMethod, changelogInstance, changeEntry);
+            changeEntryRepository.save(changeEntry);
+            logger.info("RE-APPLIED - {}", changeEntry);
+          } else {
+            logger.info("PASSED OVER - {}", changeEntry);
+          }
+        } catch(Exception ex) {
+          logger.warn(ex.getMessage(), ex);
+        }
+      });
+  }
+
+  private void executeChangeSetMethodAndTrack(Method changeSetMethod, Object changeLogInstance, ChangeEntry changeEntry) throws InvocationTargetException, IllegalAccessException {
+    changeEntry.startTracking();
+    executeChangeSetMethod(changeSetMethod, changeLogInstance);
+    changeEntry.stopTracking();
   }
 
   protected void executeChangeSetMethod(Method changeSetMethod, Object changeLogInstance)
