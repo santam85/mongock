@@ -282,7 +282,7 @@ public class LockCheckerITest extends IndependentDbIntegrationTestBase {
   }
 
   private Document getLockDbBody(String owner, long expiresAt) {
-    return new LockEntry(
+    return new LockEntryMongo(
         LockChecker.getDefaultKey(),
         LockStatus.LOCK_HELD.name(),
         owner,

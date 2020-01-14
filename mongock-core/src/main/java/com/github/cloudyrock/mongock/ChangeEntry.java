@@ -8,18 +8,9 @@ import java.util.Date;
  * Entry in the changes collection log
  * Type: entity class.
  *
- *
  * @since 27/07/2014
  */
-class ChangeEntry {
-  static final String KEY_EXECUTION_ID = "executionId";
-  static final String KEY_CHANGE_ID = "changeId";
-  static final String KEY_AUTHOR = "author";
-  private static final String KEY_TIMESTAMP = "timestamp";
-  private static final String KEY_CHANGE_LOG_CLASS = "changeLogClass";
-  private static final String KEY_CHANGE_SET_METHOD = "changeSetMethod";
-  private static final String KEY_EXECUTION_MILLIS = "executionMillis";
-  private static final String KEY_METADATA = "metadata";
+public abstract class ChangeEntry implements Entry {
 
 
   private final String executionId;
@@ -41,39 +32,28 @@ class ChangeEntry {
     this.metadata = metadata;
   }
 
-  Document buildFullDBObject() {
-    return new Document()
-        .append(KEY_EXECUTION_ID, this.executionId)
-        .append(KEY_CHANGE_ID, this.changeId)
-        .append(KEY_AUTHOR, this.author)
-        .append(KEY_TIMESTAMP, this.timestamp)
-        .append(KEY_CHANGE_LOG_CLASS, this.changeLogClass)
-        .append(KEY_CHANGE_SET_METHOD, this.changeSetMethodName)
-        .append(KEY_EXECUTION_MILLIS, this.executionMillis)
-        .append(KEY_METADATA, this.metadata);
-  }
 
   public String getExecutionId() {
     return executionId;
   }
 
-  String getChangeId() {
+  public String getChangeId() {
     return this.changeId;
   }
 
-  String getAuthor() {
+  public String getAuthor() {
     return this.author;
   }
 
-  Date getTimestamp() {
+  public Date getTimestamp() {
     return this.timestamp;
   }
 
-  String getChangeLogClass() {
+  public String getChangeLogClass() {
     return this.changeLogClass;
   }
 
-  String getChangeSetMethodName() {
+  public String getChangeSetMethodName() {
     return this.changeSetMethodName;
   }
 

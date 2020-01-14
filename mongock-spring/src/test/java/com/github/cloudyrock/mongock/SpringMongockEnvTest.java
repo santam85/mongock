@@ -30,8 +30,8 @@ public class SpringMongockEnvTest extends SpringMongockTestBase {
     // then
     long change1 = mongoDatabase.getCollection(CHANGELOG_COLLECTION_NAME)
         .count(new Document()
-            .append(ChangeEntry.KEY_CHANGE_ID, "Envtest1")
-            .append(ChangeEntry.KEY_AUTHOR, "testuser"));
+            .append(ChangeEntryMongo.KEY_CHANGE_ID, "Envtest1")
+            .append(ChangeEntryMongo.KEY_AUTHOR, "testuser"));
     assertEquals(1, change1);
 
   }
@@ -49,8 +49,8 @@ public class SpringMongockEnvTest extends SpringMongockTestBase {
     // then
     long change1 = mongoDatabase.getCollection(CHANGELOG_COLLECTION_NAME)
         .count(new Document()
-            .append(ChangeEntry.KEY_CHANGE_ID, "Envtest1")
-            .append(ChangeEntry.KEY_AUTHOR, "testuser"));
+            .append(ChangeEntryMongo.KEY_CHANGE_ID, "Envtest1")
+            .append(ChangeEntryMongo.KEY_AUTHOR, "testuser"));
     assertEquals(1, change1);
 
   }

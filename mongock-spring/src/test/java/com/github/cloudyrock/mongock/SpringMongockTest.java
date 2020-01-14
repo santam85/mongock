@@ -31,25 +31,25 @@ public class SpringMongockTest extends SpringMongockTestBase {
 
     // dbchangelog collection checking
     long change1 = mongoDatabase.getCollection(CHANGELOG_COLLECTION_NAME).count(new Document()
-        .append(ChangeEntry.KEY_CHANGE_ID, "test1")
-        .append(ChangeEntry.KEY_AUTHOR, "testuser"));
+        .append(ChangeEntryMongo.KEY_CHANGE_ID, "test1")
+        .append(ChangeEntryMongo.KEY_AUTHOR, "testuser"));
     assertEquals(1, change1);
     long change2 = mongoDatabase.getCollection(CHANGELOG_COLLECTION_NAME).count(new Document()
-        .append(ChangeEntry.KEY_CHANGE_ID, "test2")
-        .append(ChangeEntry.KEY_AUTHOR, "testuser"));
+        .append(ChangeEntryMongo.KEY_CHANGE_ID, "test2")
+        .append(ChangeEntryMongo.KEY_AUTHOR, "testuser"));
     assertEquals(1, change2);
 
     long change4 = mongoDatabase.getCollection(CHANGELOG_COLLECTION_NAME).count(new Document()
-        .append(ChangeEntry.KEY_CHANGE_ID, "test4")
-        .append(ChangeEntry.KEY_AUTHOR, "testuser"));
+        .append(ChangeEntryMongo.KEY_CHANGE_ID, "test4")
+        .append(ChangeEntryMongo.KEY_AUTHOR, "testuser"));
     assertEquals(1, change4);
     long change5 = mongoDatabase.getCollection(CHANGELOG_COLLECTION_NAME).count(new Document()
-        .append(ChangeEntry.KEY_CHANGE_ID, "test5")
-        .append(ChangeEntry.KEY_AUTHOR, "testuser"));
+        .append(ChangeEntryMongo.KEY_CHANGE_ID, "test5")
+        .append(ChangeEntryMongo.KEY_AUTHOR, "testuser"));
     assertEquals(1, change5);
 
     long changeAll = mongoDatabase.getCollection(CHANGELOG_COLLECTION_NAME).count(new Document()
-        .append(ChangeEntry.KEY_AUTHOR, "testuser"));
+        .append(ChangeEntryMongo.KEY_AUTHOR, "testuser"));
     assertEquals(10, changeAll);
   }
 

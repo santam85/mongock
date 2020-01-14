@@ -3,9 +3,9 @@ package com.github.cloudyrock.mongock;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 
-import static com.github.cloudyrock.mongock.ChangeEntry.KEY_AUTHOR;
-import static com.github.cloudyrock.mongock.ChangeEntry.KEY_CHANGE_ID;
-import static com.github.cloudyrock.mongock.ChangeEntry.KEY_EXECUTION_ID;
+import static com.github.cloudyrock.mongock.ChangeEntryMongo.KEY_AUTHOR;
+import static com.github.cloudyrock.mongock.ChangeEntryMongo.KEY_CHANGE_ID;
+import static com.github.cloudyrock.mongock.ChangeEntryMongo.KEY_EXECUTION_ID;
 
 /**
  *

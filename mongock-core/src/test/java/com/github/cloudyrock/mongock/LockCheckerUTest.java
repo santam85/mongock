@@ -150,7 +150,7 @@ public class LockCheckerUTest {
         .doNothing()
         .when(dao).insertUpdate(any(LockEntry.class));
 
-    when(dao.findByKey(anyString())).thenReturn(new LockEntry(
+    when(dao.findByKey(anyString())).thenReturn(new LockEntryMongo(
         LockChecker.getDefaultKey(),
         LockStatus.LOCK_HELD.name(),
         checker.getOwner(),
@@ -306,7 +306,7 @@ public class LockCheckerUTest {
     doThrow(new LockPersistenceException("Faked")).doNothing()
         .when(dao).updateIfSameOwner(any(LockEntry.class));
 
-    when(dao.findByKey(anyString())).thenReturn(new LockEntry(
+    when(dao.findByKey(anyString())).thenReturn(new LockEntryMongo(
         LockChecker.getDefaultKey(),
         LockStatus.LOCK_HELD.name(),
         checker.getOwner(),
@@ -482,7 +482,7 @@ public class LockCheckerUTest {
   }
 
   private LockEntry createFakeLock(long expiresAt, String owner) {
-    return new LockEntry(
+    return new LockEntryMongo(
         LockChecker.getDefaultKey(),
         LockStatus.LOCK_HELD.name(),
         owner,

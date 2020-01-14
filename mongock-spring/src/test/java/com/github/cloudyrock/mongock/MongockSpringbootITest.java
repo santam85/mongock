@@ -45,8 +45,8 @@ public class MongockSpringbootITest extends IndependentDbIntegrationTestBase {
 
     // dbchangelog collection checking
     long change1 = this.mongoClient.getDatabase(DEFAULT_DATABASE_NAME).getCollection(CHANGELOG_COLLECTION_NAME).count(new Document()
-        .append(ChangeEntry.KEY_CHANGE_ID, "test1")
-        .append(ChangeEntry.KEY_AUTHOR, "testuser"));
+        .append(ChangeEntryMongo.KEY_CHANGE_ID, "test1")
+        .append(ChangeEntryMongo.KEY_AUTHOR, "testuser"));
     assertEquals(1, change1);
   }
 

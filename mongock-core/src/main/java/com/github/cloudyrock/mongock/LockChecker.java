@@ -96,7 +96,7 @@ public class LockChecker {
       try {
         logger.info("Mongock trying to acquire the lock");
         final Date newLockExpiresAt = timeUtils.currentTimePlusMillis(lockAcquiredForMillis);
-        repository.insertUpdate(new LockEntry(lockKey, LockStatus.LOCK_HELD.name(), owner, newLockExpiresAt));
+        repository.insertUpdate(new LockEntryMongo(lockKey, LockStatus.LOCK_HELD.name(), owner, newLockExpiresAt));
         logger.info("Mongock acquired the lock until: {}", newLockExpiresAt);
         updateStatus(newLockExpiresAt);
         keepLooping = false;
@@ -124,7 +124,7 @@ public class LockChecker {
         try {
           logger.info("Mongock trying to refresh the lock");
           final Date lockExpiresAtTemp = timeUtils.currentTimePlusMillis(lockAcquiredForMillis);
-          final LockEntry lockEntry = new LockEntry(lockKey, LockStatus.LOCK_HELD.name(), owner, lockExpiresAtTemp);
+          final LockEntry lockEntry = new LockEntryMongo(lockKey, LockStatus.LOCK_HELD.name(), owner, lockExpiresAtTemp);
           repository.updateIfSameOwner(lockEntry);
           updateStatus(lockExpiresAtTemp);
           logger.info("Mongock refreshed the lock until: {}", lockExpiresAtTemp);

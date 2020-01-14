@@ -21,7 +21,7 @@ import java.util.Date;
 class LockMongoRepository extends MongoRepositoryBase implements LockRepository {
 
   LockMongoRepository(String collectionName, MongoDatabase db) {
-    super(db, collectionName, new String[]{LockEntry.KEY_FIELD});
+    super(db, collectionName, new String[]{LockEntryMongo.KEY_FIELD});
   }
 
   /**
@@ -54,13 +54,13 @@ class LockMongoRepository extends MongoRepositoryBase implements LockRepository 
    * @return LockEntry
    */
   public LockEntry findByKey(String lockKey) {
-    Document result = collection.find(new Document().append(LockEntry.KEY_FIELD, lockKey)).first();
+    Document result = collection.find(new Document().append(LockEntryMongo.KEY_FIELD, lockKey)).first();
     if (result != null) {
-      return new LockEntry(
-          result.getString(LockEntry.KEY_FIELD),
-          result.getString(LockEntry.STATUS_FIELD),
-          result.getString(LockEntry.OWNER_FIELD),
-          result.getDate(LockEntry.EXPIRES_AT_FIELD)
+      return new LockEntryMongo(
+          result.getString(LockEntryMongo.KEY_FIELD),
+          result.getString(LockEntryMongo.STATUS_FIELD),
+          result.getString(LockEntryMongo.OWNER_FIELD),
+          result.getDate(LockEntryMongo.EXPIRES_AT_FIELD)
       );
     }
     return null;
@@ -74,7 +74,7 @@ class LockMongoRepository extends MongoRepositoryBase implements LockRepository 
    */
   public void removeByKeyAndOwner(String lockKey, String owner) {
     collection
-        .deleteMany(Filters.and(Filters.eq(LockEntry.KEY_FIELD, lockKey), Filters.eq(LockEntry.OWNER_FIELD, owner)));
+        .deleteMany(Filters.and(Filters.eq(LockEntryMongo.KEY_FIELD, lockKey), Filters.eq(LockEntryMongo.OWNER_FIELD, owner)));
   }
 
   private void insertUpdate(LockEntry newLock, boolean onlyIfSameOwner)  {
@@ -107,11 +107,11 @@ class LockMongoRepository extends MongoRepositoryBase implements LockRepository 
   }
 
   private Bson getAcquireLockQuery(String lockKey, String owner, boolean onlyIfSameOwner) {
-    final Bson expiresAtCond = Filters.lt(LockEntry.EXPIRES_AT_FIELD, new Date());
-    final Bson ownerCond = Filters.eq(LockEntry.OWNER_FIELD, owner);
+    final Bson expiresAtCond = Filters.lt(LockEntryMongo.EXPIRES_AT_FIELD, new Date());
+    final Bson ownerCond = Filters.eq(LockEntryMongo.OWNER_FIELD, owner);
     final Bson orCond = onlyIfSameOwner ? Filters.or(ownerCond) : Filters.or(expiresAtCond, ownerCond);
     return Filters
-        .and(Filters.eq(LockEntry.KEY_FIELD, lockKey), Filters.eq(LockEntry.STATUS_FIELD, LockStatus.LOCK_HELD.name()),
+        .and(Filters.eq(LockEntryMongo.KEY_FIELD, lockKey), Filters.eq(LockEntryMongo.STATUS_FIELD, LockStatus.LOCK_HELD.name()),
             orCond);
   }
 

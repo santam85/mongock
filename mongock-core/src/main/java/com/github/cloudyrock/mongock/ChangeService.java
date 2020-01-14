@@ -116,7 +116,7 @@ class ChangeService {
     if (changesetMethod.isAnnotationPresent(ChangeSet.class)) {
       ChangeSet annotation = changesetMethod.getAnnotation(ChangeSet.class);
 
-      return new ChangeEntry(
+      return new ChangeEntryMongo(
           executionId,
           annotation.id(),
           annotation.author(),
