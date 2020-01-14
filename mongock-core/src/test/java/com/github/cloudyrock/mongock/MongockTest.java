@@ -50,7 +50,7 @@ public class MongockTest extends IndependentDbIntegrationTestBase {
   public void init() {
     TestUtils.setField(changeEntryRepository, "mongoDatabase", db);
 
-    doCallRealMethod().when(changeEntryRepository).save(any(ChangeEntry.class));
+    doCallRealMethod().when(changeEntryRepository).save(any(ChangeEntryMongo.class));
     TestUtils.setField(changeEntryRepository, "indexDao", indexDao);
     TestUtils.setField(changeEntryRepository, "changelogCollectionName", CHANGELOG_COLLECTION_NAME);
     TestUtils.setField(changeEntryRepository, "collection", db.getCollection(CHANGELOG_COLLECTION_NAME));
@@ -69,13 +69,13 @@ public class MongockTest extends IndependentDbIntegrationTestBase {
   @Test
   public void shouldExecuteAllChangeSets() {
     // given
-    when(changeEntryRepository.isNewChange(any(ChangeEntry.class))).thenReturn(true);
+    when(changeEntryRepository.isNewChange(any(ChangeEntryMongo.class))).thenReturn(true);
 
     // when
     runner.execute();
 
     // then
-    verify(changeEntryRepository, times(19)).save(any(ChangeEntry.class)); // 21 changesets saved to dbchangelog
+    verify(changeEntryRepository, times(19)).save(any(ChangeEntryMongo.class)); // 21 changesets saved to dbchangelog
 
     // dbchangelog collection checking
     long change1 = db.getCollection(CHANGELOG_COLLECTION_NAME).count(new Document()
@@ -105,13 +105,13 @@ public class MongockTest extends IndependentDbIntegrationTestBase {
   @Test
   public void shouldRunAndSaveRunAlwaysMethodAfterFirstExecution() {
     // given
-    when(changeEntryRepository.isNewChange(any(ChangeEntry.class))).thenReturn(false);
+    when(changeEntryRepository.isNewChange(any(ChangeEntryMongo.class))).thenReturn(false);
 
     // when
     runner.execute();
 
     // then
-    verify(changeEntryRepository, times(1)).save(any(ChangeEntry.class)); // no changesets saved to dbchangelog
+    verify(changeEntryRepository, times(1)).save(any(ChangeEntryMongo.class)); // no changesets saved to dbchangelog
   }
 
   @Test
@@ -121,7 +121,7 @@ public class MongockTest extends IndependentDbIntegrationTestBase {
     runner.execute();
 
     // then
-    verify(changeEntryRepository, atLeastOnce()).isNewChange(any(ChangeEntry.class));
+    verify(changeEntryRepository, atLeastOnce()).isNewChange(any(ChangeEntryMongo.class));
   }
 
   @Test
@@ -142,7 +142,7 @@ public class MongockTest extends IndependentDbIntegrationTestBase {
     runner.execute();
 
     // then
-    verify(changeEntryRepository, never()).isNewChange(any(ChangeEntry.class));
+    verify(changeEntryRepository, never()).isNewChange(any(ChangeEntryMongo.class));
   }
 
   @Test(expected = MongockException.class)
@@ -174,7 +174,7 @@ public class MongockTest extends IndependentDbIntegrationTestBase {
     // given
     // would be nicer with a mock for the whole execution, but this would mean breaking out to separate class..
     // this should be "good enough"
-    when(changeEntryRepository.isNewChange(any(ChangeEntry.class))).thenThrow(RuntimeException.class);
+    when(changeEntryRepository.isNewChange(any(ChangeEntryMongo.class))).thenThrow(RuntimeException.class);
 
     // when
     // have to catch the exception to be able to verify after
@@ -210,16 +210,16 @@ public class MongockTest extends IndependentDbIntegrationTestBase {
 
     ProxiesMongockTestResource changeLog = mock(ProxiesMongockTestResource.class);
 
-    when(changeEntryRepository.isNewChange(any(ChangeEntry.class))).thenReturn(true);
+    when(changeEntryRepository.isNewChange(any(ChangeEntryMongo.class))).thenReturn(true);
     doReturn(Collections.singletonList(ProxiesMongockTestResource.class))
         .when(changeService).fetchChangeLogs();
     doReturn(changeLog).when(changeService).createInstance(any(Class.class));
     doReturn(Collections.singletonList(ProxiesMongockTestResource.class.getDeclaredMethod("testMongoDatabase", MongoDatabase.class)))
         .when(changeService).fetchChangeSets(any(Class.class));
 
-    when(changeEntryRepository.isNewChange(any(ChangeEntry.class))).thenReturn(true);
+    when(changeEntryRepository.isNewChange(any(ChangeEntryMongo.class))).thenReturn(true);
     // given
-    when(changeEntryRepository.isNewChange(any(ChangeEntry.class))).thenReturn(true);
+    when(changeEntryRepository.isNewChange(any(ChangeEntryMongo.class))).thenReturn(true);
 
 
     MongoDatabase proxyMongoDatabase = mock(MongoDatabase.class);

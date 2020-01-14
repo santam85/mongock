@@ -22,7 +22,7 @@ public class SpringMongockEnvTest extends SpringMongockTestBase {
     // given
     changeService.setEnvironment(new EnvironmentMock());
     changeService.setChangeLogsBasePackage(EnvironmentDependentTestResource.class.getPackage().getName());
-    when(changeEntryRepository.isNewChange(any(ChangeEntry.class))).thenReturn(true);
+    when(changeEntryRepository.isNewChange(any(ChangeEntryMongo.class))).thenReturn(true);
 
     // when
     runner.execute();
@@ -41,7 +41,7 @@ public class SpringMongockEnvTest extends SpringMongockTestBase {
     // given
     changeService.setEnvironment(null);
     changeService.setChangeLogsBasePackage(EnvironmentDependentTestResource.class.getPackage().getName());
-    when(changeEntryRepository.isNewChange(any(ChangeEntry.class))).thenReturn(true);
+    when(changeEntryRepository.isNewChange(any(ChangeEntryMongo.class))).thenReturn(true);
 
     // when
     runner.execute();

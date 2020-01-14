@@ -8,10 +8,9 @@ import java.util.Date;
  * Entry in the changes collection log
  * Type: entity class.
  *
- *
  * @since 27/07/2014
  */
-public class ChangeEntryMongo extends ChangeEntry {
+public class ChangeEntryMongo extends ChangeEntry<Document> {
   static final String KEY_EXECUTION_ID = "executionId";
   static final String KEY_CHANGE_ID = "changeId";
   static final String KEY_AUTHOR = "author";
@@ -23,10 +22,11 @@ public class ChangeEntryMongo extends ChangeEntry {
 
 
   public ChangeEntryMongo(String executionId, String changeId, String author, Date timestamp, String changeLogClass, String changeSetMethodName, Object metadata) {
-   super(executionId, changeId, author, timestamp, changeLogClass, changeSetMethodName, metadata);
+    super(executionId, changeId, author, timestamp, changeLogClass, changeSetMethodName, metadata);
   }
 
-  public Document buildFullDBObject() {
+  @Override
+  public Document getItemForDB() {
     return new Document()
         .append(KEY_EXECUTION_ID, this.getExecutionId())
         .append(KEY_CHANGE_ID, this.getChangeId())

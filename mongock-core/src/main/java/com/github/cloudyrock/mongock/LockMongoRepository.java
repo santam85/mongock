@@ -86,7 +86,7 @@ class LockMongoRepository extends MongoRepositoryBase implements LockRepository 
 
       final UpdateResult result = collection.updateMany(
           acquireLockQuery,
-          new Document().append("$set", newLock.buildFullDBObject()),
+          new Document().append("$set", newLock.getItemForDB()),
           new UpdateOptions().upsert(!onlyIfSameOwner));
 
       lockHeld = result.getModifiedCount() <= 0 && result.getUpsertedId() == null;

@@ -21,7 +21,7 @@ public class LockEntryTest {
 
   @Test
   public void buildFullDBObject() {
-    Document actual = new LockEntryMongo("KEY", "STATUS", "OWNER", new Date(1)).buildFullDBObject();
+    Document actual = new LockEntryMongo("KEY", "STATUS", "OWNER", new Date(1)).getItemForDB();
     Document expected = new Document()
         .append("key", "KEY")
         .append("status", "STATUS")

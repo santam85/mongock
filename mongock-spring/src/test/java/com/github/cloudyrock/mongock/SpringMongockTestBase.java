@@ -64,7 +64,7 @@ public class SpringMongockTestBase {
     mongoDatabase = mongoClient.getDatabase(DEFAULT_DATABASE_NAME);
     com.github.cloudyrock.mongock.TestUtils.setField(changeEntryRepository, "mongoDatabase", mongoDatabase);
 
-    doCallRealMethod().when(changeEntryRepository).save(any(ChangeEntry.class));
+    doCallRealMethod().when(changeEntryRepository).save(any(ChangeEntryMongo.class));
     TestUtils.setField(changeEntryRepository, "indexDao", indexDao);
     TestUtils.setField(changeEntryRepository, "changelogCollectionName", CHANGELOG_COLLECTION_NAME);
     TestUtils.setField(changeEntryRepository, "collection", mongoDatabase.getCollection(CHANGELOG_COLLECTION_NAME));

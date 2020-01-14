@@ -21,13 +21,13 @@ public class SpringMongockTest extends SpringMongockTestBase {
   @Test
   public void shouldExecuteAllChangeSets() throws Exception {
     // given
-    when(changeEntryRepository.isNewChange(any(ChangeEntry.class))).thenReturn(true);
+    when(changeEntryRepository.isNewChange(any(ChangeEntryMongo.class))).thenReturn(true);
 
     // when
     runner.execute();
 
     // then
-    verify(changeEntryRepository, times(11)).save(any(ChangeEntry.class)); // 13 changesets saved to dbchangelog
+    verify(changeEntryRepository, times(11)).save(any(ChangeEntryMongo.class)); // 13 changesets saved to dbchangelog
 
     // dbchangelog collection checking
     long change1 = mongoDatabase.getCollection(CHANGELOG_COLLECTION_NAME).count(new Document()
@@ -56,20 +56,20 @@ public class SpringMongockTest extends SpringMongockTestBase {
   @Test
   public void shouldPassOverChangeSets() {
     // given
-    when(changeEntryRepository.isNewChange(any(ChangeEntry.class))).thenReturn(false);
+    when(changeEntryRepository.isNewChange(any(ChangeEntryMongo.class))).thenReturn(false);
 
     // when
     runner.execute();
 
     // then
-    verify(changeEntryRepository, times(1)).save(any(ChangeEntry.class)); // no changesets saved to dbchangelog
+    verify(changeEntryRepository, times(1)).save(any(ChangeEntryMongo.class)); // no changesets saved to dbchangelog
   }
 
   @Test
   public void shouldUsePreConfiguredMongoTemplate() {
     MongoTemplate mt = mock(MongoTemplate.class);
     when(mt.getCollectionNames()).thenReturn(Collections.EMPTY_SET);
-    when(changeEntryRepository.isNewChange(any(ChangeEntry.class))).thenReturn(true);
+    when(changeEntryRepository.isNewChange(any(ChangeEntryMongo.class))).thenReturn(true);
     runner.addChangeSetDependency(MongoTemplate.class, mt);
     runner.afterPropertiesSet();
     verify(mt).getCollectionNames();

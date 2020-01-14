@@ -1,16 +1,13 @@
 package com.github.cloudyrock.mongock;
 
-import org.bson.Document;
-
 import java.util.Date;
 
 /**
  * Type: entity class.
  *
- *
  * @since 27/07/2014
  */
-public abstract class LockEntry implements Entry{
+public abstract class LockEntry<T> implements ElementDB<T> {
 
   private final String key;
   private final String status;

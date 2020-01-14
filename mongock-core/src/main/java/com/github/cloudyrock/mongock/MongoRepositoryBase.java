@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-abstract class MongoRepositoryBase implements Repository{
+public abstract class MongoRepositoryBase implements Repository {
 
   private static final Logger logger = LoggerFactory.getLogger("MongoRepository");
   final MongoCollection<Document> collection;

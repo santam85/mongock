@@ -28,7 +28,7 @@ public class SpringMongockProfileTest extends SpringMongockTestBase {
     // given
     changeService.setEnvironment(new EnvironmentMock("dev", "test"));
     changeService.setChangeLogsBasePackage(ProfiledDevChangeLog.class.getPackage().getName());
-    when(changeEntryRepository.isNewChange(any(ChangeEntry.class))).thenReturn(true);
+    when(changeEntryRepository.isNewChange(any(ChangeEntryMongo.class))).thenReturn(true);
 
     // when
     runner.execute();
@@ -60,7 +60,7 @@ public class SpringMongockProfileTest extends SpringMongockTestBase {
     // given
     changeService.setChangeLogsBasePackage(UnProfiledChangeLog.class.getPackage().getName());
     TestUtils.setField(runner, "springEnvironment", new EnvironmentMock("test"));
-    when(changeEntryRepository.isNewChange(any(ChangeEntry.class))).thenReturn(true);
+    when(changeEntryRepository.isNewChange(any(ChangeEntryMongo.class))).thenReturn(true);
 
     // when
     runner.execute();
@@ -102,7 +102,7 @@ public class SpringMongockProfileTest extends SpringMongockTestBase {
     // given
     changeService.setChangeLogsBasePackage(ProfiledDevChangeLog.class.getPackage().getName());
     TestUtils.setField(runner, "springEnvironment", new EnvironmentMock("foobar"));
-    when(changeEntryRepository.isNewChange(any(ChangeEntry.class))).thenReturn(true);
+    when(changeEntryRepository.isNewChange(any(ChangeEntryMongo.class))).thenReturn(true);
 
     // when
     runner.execute();
@@ -117,7 +117,7 @@ public class SpringMongockProfileTest extends SpringMongockTestBase {
     // given
     changeService.setChangeLogsBasePackage(AnotherMongockTestResource.class.getPackage().getName());
     TestUtils.setField(runner, "springEnvironment", null);
-    when(changeEntryRepository.isNewChange(any(ChangeEntry.class))).thenReturn(true);
+    when(changeEntryRepository.isNewChange(any(ChangeEntryMongo.class))).thenReturn(true);
 
     // when
     runner.execute();
@@ -132,7 +132,7 @@ public class SpringMongockProfileTest extends SpringMongockTestBase {
     // given
     changeService.setChangeLogsBasePackage(AnotherMongockTestResource.class.getPackage().getName());
     TestUtils.setField(runner, "springEnvironment", new EnvironmentMock());
-    when(changeEntryRepository.isNewChange(any(ChangeEntry.class))).thenReturn(true);
+    when(changeEntryRepository.isNewChange(any(ChangeEntryMongo.class))).thenReturn(true);
 
     // when
     runner.execute();
@@ -147,7 +147,7 @@ public class SpringMongockProfileTest extends SpringMongockTestBase {
     // given
     changeService.setChangeLogsBasePackage(AnotherMongockTestResource.class.getPackage().getName());
     TestUtils.setField(runner, "springEnvironment", new EnvironmentMock("dev"));
-    when(changeEntryRepository.isNewChange(any(ChangeEntry.class))).thenReturn(true);
+    when(changeEntryRepository.isNewChange(any(ChangeEntryMongo.class))).thenReturn(true);
 
     // when
     runner.execute();

@@ -1,7 +1,5 @@
 package com.github.cloudyrock.mongock;
 
-import org.bson.Document;
-
 import java.util.Date;
 
 /**
@@ -10,8 +8,7 @@ import java.util.Date;
  *
  * @since 27/07/2014
  */
-public abstract class ChangeEntry implements Entry {
-
+public abstract class ChangeEntry<T> implements ElementDB<T> {
 
   private final String executionId;
   private final String changeId;

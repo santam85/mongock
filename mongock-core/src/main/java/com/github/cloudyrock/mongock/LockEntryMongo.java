@@ -4,7 +4,7 @@ import org.bson.Document;
 
 import java.util.Date;
 
-public class LockEntryMongo extends LockEntry{
+public class LockEntryMongo extends LockEntry<Document> {
 
   static final String KEY_FIELD = "key";
   static final String STATUS_FIELD = "status";
@@ -15,7 +15,8 @@ public class LockEntryMongo extends LockEntry{
     super(key, status, owner, expiresAt);
   }
 
-  public Document buildFullDBObject() {
+  @Override
+  public Document getItemForDB() {
     Document entry = new Document();
     entry.append(KEY_FIELD, this.getKey())
         .append(STATUS_FIELD, this.getStatus())

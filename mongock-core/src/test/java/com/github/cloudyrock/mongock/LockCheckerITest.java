@@ -287,7 +287,7 @@ public class LockCheckerITest extends IndependentDbIntegrationTestBase {
         LockStatus.LOCK_HELD.name(),
         owner,
         new Date(expiresAt)
-    ).buildFullDBObject();
+    ).getItemForDB();
   }
 
   private long currentTimePlusHours(int hours) {

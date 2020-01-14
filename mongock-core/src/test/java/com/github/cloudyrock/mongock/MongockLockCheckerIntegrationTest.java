@@ -83,7 +83,7 @@ public class MongockLockCheckerIntegrationTest extends IndependentDbIntegrationT
 
   @Test
   public void shouldCallEnsureLock() throws Exception {
-    when(changeEntryRepository.isNewChange(any(ChangeEntry.class))).thenReturn(true);
+    when(changeEntryRepository.isNewChange(any(ChangeEntryMongo.class))).thenReturn(true);
     MongoDatabase mongoDatabaseProxy = new MongoDataBaseDecoratorImpl(db, methodInvoker);
 
     runner = builder.build(changeEntryRepository, changeService, lockChecker, mongoDatabaseProxy);
@@ -102,7 +102,7 @@ public class MongockLockCheckerIntegrationTest extends IndependentDbIntegrationT
     doReturn(new Date(System.currentTimeMillis() - tenMinutes))
         .doReturn(new Date(System.currentTimeMillis() + tenMinutes))
         .when(timeUtils).currentTime();
-    when(changeEntryRepository.isNewChange(any(ChangeEntry.class))).thenReturn(true);
+    when(changeEntryRepository.isNewChange(any(ChangeEntryMongo.class))).thenReturn(true);
     MongoDatabase mongoDatabaseProxy = new MongoDataBaseDecoratorImpl(db, methodInvoker);//proxyFactory.createProxyFromOriginal(db);
     runner = builder.build(changeEntryRepository, changeService, lockChecker, mongoDatabaseProxy);
 
@@ -145,7 +145,7 @@ public class MongockLockCheckerIntegrationTest extends IndependentDbIntegrationT
         }
       }
     };
-    when(changeEntryRepository.isNewChange(any(ChangeEntry.class))).thenReturn(true);
+    when(changeEntryRepository.isNewChange(any(ChangeEntryMongo.class))).thenReturn(true);
     MongoDatabase mongoDatabaseProxy = new MongoDataBaseDecoratorImpl(db, methodInvoker);//proxyFactory.createProxyFromOriginal(db);
     runner = builder.build(changeEntryRepository, changeService, lockChecker, mongoDatabaseProxy);
 

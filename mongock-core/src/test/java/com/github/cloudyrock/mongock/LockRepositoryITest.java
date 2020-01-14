@@ -35,17 +35,17 @@ public class LockRepositoryITest extends IndependentDbIntegrationTestBase {
     //inserting lock with key1: fine
     db.getCollection(LOCK_COLLECTION_NAME)
         .insertOne(new LockEntryMongo("KEY1", "STATUS1", "process1", new Date(System.currentTimeMillis() - 60000))
-            .buildFullDBObject());
+            .getItemForDB());
     //inserting lock with key2: fine
     db.getCollection(LOCK_COLLECTION_NAME)
         .insertOne(new LockEntryMongo("KEY2", "STATUS1", "process1", new Date(System.currentTimeMillis() - 60000))
-            .buildFullDBObject());
+            .getItemForDB());
 
     try {
       //inserting lock with key1 again: Exception
       db.getCollection(LOCK_COLLECTION_NAME)
           .insertOne(new LockEntryMongo("KEY1", "STATUS2", "process2", new Date(System.currentTimeMillis() - 60000))
-              .buildFullDBObject());
+              .getItemForDB());
 
     } catch (MongoWriteException ex) {
       assertEquals(ErrorCategory.DUPLICATE_KEY, ex.getError().getCategory());
@@ -60,7 +60,7 @@ public class LockRepositoryITest extends IndependentDbIntegrationTestBase {
         new Document().append("$set",
             new LockEntryMongo(LOCK_KEY, LockStatus.LOCK_HELD.name(), "process1",
                 new Date(System.currentTimeMillis() - 60000))
-                .buildFullDBObject()),
+                .getItemForDB()),
         new UpdateOptions().upsert(true));
 
     //when
@@ -140,7 +140,7 @@ public class LockRepositoryITest extends IndependentDbIntegrationTestBase {
         new Document().append("$set",
             new LockEntryMongo(LOCK_KEY, LockStatus.LOCK_HELD.name(), "process1",
                 new Date(System.currentTimeMillis() - 600000))
-                .buildFullDBObject()),
+                .getItemForDB()),
         new UpdateOptions().upsert(true));
     assertNotNull("Precondition: Lock should be in db",
         db.getCollection(LOCK_COLLECTION_NAME).find(new Document().append("key", LOCK_KEY)).first());
@@ -160,7 +160,7 @@ public class LockRepositoryITest extends IndependentDbIntegrationTestBase {
         new Document().append("$set",
             new LockEntryMongo(LOCK_KEY, LockStatus.LOCK_HELD.name(), "process1",
                 new Date(System.currentTimeMillis() - 600000))
-                .buildFullDBObject()),
+                .getItemForDB()),
         new UpdateOptions().upsert(true));
     assertNotNull("Precondition: Lock should be in db",
         db.getCollection(LOCK_COLLECTION_NAME).find(new Document().append("key", LOCK_KEY)).first());
