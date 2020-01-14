@@ -64,7 +64,7 @@ public class MongockTest extends IndependentDbIntegrationTestBase {
         changeService,
         lockChecker);
 
-    temp.addChangeSetDependency(db);
+    temp.addChangeSetDependency(MongoDatabase.class, db);
     temp.setEnabled(true);
     temp.setThrowExceptionIfCannotObtainLock(true);
     runner = spy(temp);
@@ -225,11 +225,10 @@ public class MongockTest extends IndependentDbIntegrationTestBase {
     when(changeEntryRepository.isNewChange(any(ChangeEntry.class))).thenReturn(true);
     // given
     when(changeEntryRepository.isNewChange(any(ChangeEntry.class))).thenReturn(true);
-    runner.addChangeSetDependency(db);
 
 
     MongoDatabase proxyMongoDatabase = mock(MongoDatabase.class);
-    runner.addChangeSetDependency(proxyMongoDatabase);
+    runner.addChangeSetDependency(MongoDatabase.class, proxyMongoDatabase);
 
     // when
     runner.execute();
