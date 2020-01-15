@@ -2,16 +2,9 @@ package com.github.cloudyrock.mongock;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
-
-import java.lang.reflect.Method;
-import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -30,7 +23,7 @@ public class SpringChangeServiceTest {
     Mockito.when(environment.getActiveProfiles()).thenReturn(new String[]{});
     SpringChangeService service = new SpringChangeService();
     service.setEnvironment(environment);
-    assertEquals(service.fetchChangeSets(ChangeLogClass.class).size(), 4);
+    assertEquals(service.fetchChangeSetsSorted(ChangeLogClass.class).size(), 4);
   }
 
 
@@ -39,7 +32,7 @@ public class SpringChangeServiceTest {
     Mockito.when(environment.getActiveProfiles()).thenReturn(new String[]{"test"});
     SpringChangeService service = new SpringChangeService();
     service.setEnvironment(environment);
-    assertEquals(service.fetchChangeSets(ChangeLogClass.class).size(), 4);
+    assertEquals(service.fetchChangeSetsSorted(ChangeLogClass.class).size(), 4);
   }
 
 
@@ -48,7 +41,7 @@ public class SpringChangeServiceTest {
     Mockito.when(environment.getActiveProfiles()).thenReturn(new String[]{"test", "dataset"});
     SpringChangeService service = new SpringChangeService();
     service.setEnvironment(environment);
-    assertEquals(service.fetchChangeSets(ChangeLogClass.class).size(), 5);
+    assertEquals(service.fetchChangeSetsSorted(ChangeLogClass.class).size(), 5);
   }
 
 }

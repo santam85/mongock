@@ -212,10 +212,10 @@ public class MongockTest extends IndependentDbIntegrationTestBase {
 
     when(changeEntryRepository.isNewChange(any(ChangeEntryMongo.class))).thenReturn(true);
     doReturn(Collections.singletonList(ProxiesMongockTestResource.class))
-        .when(changeService).fetchChangeLogs();
+        .when(changeService).fetchChangeLogsSorted();
     doReturn(changeLog).when(changeService).createInstance(any(Class.class));
     doReturn(Collections.singletonList(ProxiesMongockTestResource.class.getDeclaredMethod("testMongoDatabase", MongoDatabase.class)))
-        .when(changeService).fetchChangeSets(any(Class.class));
+        .when(changeService).fetchChangeSetsSorted(any(Class.class));
 
     when(changeEntryRepository.isNewChange(any(ChangeEntryMongo.class))).thenReturn(true);
     // given

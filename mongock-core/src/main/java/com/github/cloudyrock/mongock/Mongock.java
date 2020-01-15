@@ -1,7 +1,5 @@
 package com.github.cloudyrock.mongock;
 
-import com.mongodb.DB;
-import com.mongodb.client.MongoDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -120,12 +118,12 @@ public class Mongock implements Closeable {
   private void executeMigration() {
     logger.info("Mongock starting the data migration sequence..");
     final String executionId = changeService.getNewExecutionId();
-    for (Class<?> changelogClass : changeService.fetchChangeLogs()) {
+    for (Class<?> changelogClass : changeService.fetchChangeLogsSorted()) {
 
       Object changelogInstance;
       try {
         changelogInstance = changeService.createInstance(changelogClass);
-        List<Method> changeSetMethods = changeService.fetchChangeSets(changelogInstance.getClass());
+        List<Method> changeSetMethods = changeService.fetchChangeSetsSorted(changelogInstance.getClass());
         for (Method changeSetMethod : changeSetMethods) {
           executeIfNewOrRunAlways(changelogInstance, changeSetMethod, changeService.createChangeEntry(executionId, changeSetMethod, this.metadata));
         }

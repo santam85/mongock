@@ -74,9 +74,9 @@ public class MongockLockCheckerIntegrationTest extends IndependentDbIntegrationT
       }
     };
     doReturn(singletonList(ProxiesMongockTestResource.class))
-        .when(changeService).fetchChangeLogs();
+        .when(changeService).fetchChangeLogsSorted();
     doReturn(singletonList(ProxiesMongockTestResource.class.getDeclaredMethod("testMongoDatabase", MongoDatabase.class)))
-        .when(changeService).fetchChangeSets(ProxiesMongockTestResource.class);
+        .when(changeService).fetchChangeSetsSorted(ProxiesMongockTestResource.class);
 
     this.changeEntryRepository = mock(ChangeEntryRepository.class);
   }

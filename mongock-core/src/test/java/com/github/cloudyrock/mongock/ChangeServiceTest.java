@@ -29,7 +29,7 @@ public class ChangeServiceTest {
     ChangeService service = new ChangeService();
     service.setChangeLogsBasePackage(scanPackage);
     // when
-    List<Class<?>> foundClasses = service.fetchChangeLogs();
+    List<Class<?>> foundClasses = service.fetchChangeLogsSorted();
     // then
     assertTrue(foundClasses != null && foundClasses.size() > 0);
   }
@@ -42,7 +42,7 @@ public class ChangeServiceTest {
     service.setChangeLogsBasePackage(scanPackage);
 
     // when
-    List<Method> foundMethods = service.fetchChangeSets(MongockTestResource.class);
+    List<Method> foundMethods = service.fetchChangeSetsSorted(MongockTestResource.class);
 
     // then
     assertTrue(foundMethods != null);
@@ -55,17 +55,17 @@ public class ChangeServiceTest {
     ChangeService service = new ChangeService();
     service.setChangeLogsBasePackage(scanPackage);
 
-    assertEquals(10, service.fetchChangeSets(MongockVersioningTestResource.class).size());
+    assertEquals(10, service.fetchChangeSetsSorted(MongockVersioningTestResource.class).size());
 
     service.setStartVersion("2018");
-    assertEquals(3, service.fetchChangeSets(MongockVersioningTestResource.class).size());
+    assertEquals(3, service.fetchChangeSetsSorted(MongockVersioningTestResource.class).size());
 
     service.setStartVersion("1.0");
-    assertEquals(6, service.fetchChangeSets(MongockVersioningTestResource.class).size());
+    assertEquals(6, service.fetchChangeSetsSorted(MongockVersioningTestResource.class).size());
 
     service.setStartVersion("1.0");
     service.setEndVersion("2018");
-    assertEquals(3, service.fetchChangeSets(MongockVersioningTestResource.class).size());
+    assertEquals(3, service.fetchChangeSetsSorted(MongockVersioningTestResource.class).size());
   }
 
   @Test
@@ -76,7 +76,7 @@ public class ChangeServiceTest {
     service.setChangeLogsBasePackage(scanPackage);
 
     // when
-    List<Method> foundMethods = service.fetchChangeSets(AnotherMongockTestResource.class);
+    List<Method> foundMethods = service.fetchChangeSetsSorted(AnotherMongockTestResource.class);
 
     // then
     assertTrue(foundMethods != null);
@@ -91,7 +91,7 @@ public class ChangeServiceTest {
     service.setChangeLogsBasePackage(scanPackage);
 
     // when
-    List<Method> foundMethods = service.fetchChangeSets(AnotherMongockTestResource.class);
+    List<Method> foundMethods = service.fetchChangeSetsSorted(AnotherMongockTestResource.class);
     // then
     for (Method foundMethod : foundMethods) {
       if (foundMethod.getName().equals("testChangeSetWithAlways")) {
@@ -109,7 +109,7 @@ public class ChangeServiceTest {
     String scanPackage = MongockTestResource.class.getPackage().getName();
     ChangeService service = new ChangeService();
     service.setChangeLogsBasePackage(scanPackage);
-    List<Method> foundMethods = service.fetchChangeSets(MongockTestResource.class);
+    List<Method> foundMethods = service.fetchChangeSetsSorted(MongockTestResource.class);
 
     for (Method foundMethod : foundMethods) {
 
@@ -130,7 +130,7 @@ public class ChangeServiceTest {
     String scanPackage = ChangeLogWithDuplicate.class.getPackage().getName();
     ChangeService service = new ChangeService();
     service.setChangeLogsBasePackage(scanPackage);
-    service.fetchChangeSets(ChangeLogWithDuplicate.class);
+    service.fetchChangeSetsSorted(ChangeLogWithDuplicate.class);
   }
 
 }

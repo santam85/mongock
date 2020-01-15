@@ -5,9 +5,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.github.cloudyrock.mongock.StringUtils.hasText;
 import static java.util.Arrays.asList;
+
+import com.github.cloudyrock.mongock.change.ChangeLogItem;
+import com.github.cloudyrock.mongock.change.ChangeSetItem;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.reflections.Reflections;
@@ -77,21 +81,35 @@ class ChangeService {
   }
 
   @SuppressWarnings("unchecked")
-  List<Class<?>> fetchChangeLogs() {
+  List<Class<?>> fetchChangeLogsSorted() {
     Reflections reflections = new Reflections(changeLogsBasePackage);
     List<Class<?>> changeLogs = new ArrayList<>(reflections.getTypesAnnotatedWith(ChangeLog.class)); // TODO remove dependency, do own method
-
-    Collections.sort(changeLogs, new ChangeLogComparator());
-
+    changeLogs.sort(new ChangeLogComparator());
     return changeLogs;
   }
 
+
+  public List<ChangeLogItem> fetchChangeLogs2() {
+    return fetchChangeLogsSorted()
+        .stream()
+        .map(type-> new ChangeLogItem(type, type.getAnnotation(ChangeLog.class).order(), fetchChangeSetFromClass(type)))
+        .collect(Collectors.toList());
+  }
+
+  private List<ChangeSetItem> fetchChangeSetFromClass(Class<?> type) {
+    return fetchChangeSetsSorted(type)
+        .stream()
+        .map(method-> {
+          ChangeSet ann = method.getAnnotation(ChangeSet.class);
+          return new ChangeSetItem(ann.id(), ann.author(), ann.order(), ann.runAlways(), ann.systemVersion(), method);
+        })
+        .collect(Collectors.toList());
+  }
+
   @SuppressWarnings("unchecked")
-  List<Method> fetchChangeSets(final Class<?> type) throws MongockException {
+  List<Method> fetchChangeSetsSorted(final Class<?> type) throws MongockException {
     final List<Method> changeSets = filterChangeSetAnnotation(asList(type.getDeclaredMethods()));
-
-    Collections.sort(changeSets, new ChangeSetComparator());
-
+    changeSets.sort(new ChangeSetComparator());
     return changeSets;
   }
 
