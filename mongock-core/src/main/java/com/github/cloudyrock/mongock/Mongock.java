@@ -1,5 +1,7 @@
 package com.github.cloudyrock.mongock;
 
+import com.github.cloudyrock.mongock.change.ChangeLogItem;
+import com.github.cloudyrock.mongock.change.ChangeSetItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -115,20 +117,19 @@ public class Mongock implements Closeable {
     mongoClientCloseable.close();
   }
 
+
   private void executeMigration() {
     logger.info("Mongock starting the data migration sequence..");
     final String executionId = changeService.getNewExecutionId();
-    for (Class<?> changelogClass : changeService.fetchChangeLogsSorted()) {
+    for (ChangeLogItem changeLog : changeService.fetchChangeLogs2()) {
 
-      Object changelogInstance;
       try {
-        changelogInstance = changeService.createInstance(changelogClass);
-        List<Method> changeSetMethods = changeService.fetchChangeSetsSorted(changelogInstance.getClass());
-        for (Method changeSetMethod : changeSetMethods) {
-          executeIfNewOrRunAlways(changelogInstance, changeSetMethod, changeService.createChangeEntry(executionId, changeSetMethod, this.metadata));
+        List<ChangeSetItem> changeSets = changeLog.getChangeSetElements();
+        for (ChangeSetItem changeSet : changeSets) {
+          executeIfNewOrRunAlways(executionId, changeLog.getInstance(), changeSet);
         }
 
-      } catch (NoSuchMethodException | IllegalAccessException | InstantiationException e) {
+      } catch (IllegalAccessException e) {
         throw new MongockException(e.getMessage(), e);
       } catch (InvocationTargetException e) {
         Throwable targetException = e.getTargetException();
@@ -138,15 +139,16 @@ public class Mongock implements Closeable {
     }
   }
 
-  private void executeIfNewOrRunAlways(Object changelogInstance, Method changeSetMethod, ChangeEntry changeEntry) throws IllegalAccessException, InvocationTargetException {
+  private void executeIfNewOrRunAlways(String executionId, Object changelogInstance, ChangeSetItem changeSet) throws IllegalAccessException, InvocationTargetException {
     try {
+      ChangeEntry changeEntry = changeService.createChangeEntry(executionId, changeSet.getMethod(), this.metadata);
       if (changeEntryRepository.isNewChange(changeEntry)) {
-        final long executionTimeMillis = executeChangeSetMethod(changeSetMethod, changelogInstance);
+        final long executionTimeMillis = executeChangeSetMethod(changeSet.getMethod(), changelogInstance);
         changeEntry.setExecutionMillis(executionTimeMillis);
         changeEntryRepository.save(changeEntry);
         logger.info("APPLIED - {}", changeEntry);
-      } else if (changeService.isRunAlwaysChangeSet(changeSetMethod)) {
-        final long executionTimeMillis = executeChangeSetMethod(changeSetMethod, changelogInstance);
+      } else if (changeService.isRunAlwaysChangeSet(changeSet.getMethod())) {
+        final long executionTimeMillis = executeChangeSetMethod(changeSet.getMethod(), changelogInstance);
         changeEntry.setExecutionMillis(executionTimeMillis);
         changeEntryRepository.save(changeEntry);
         logger.info("RE-APPLIED - {}", changeEntry);

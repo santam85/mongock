@@ -4,17 +4,17 @@ import java.lang.reflect.Method;
 
 public class ChangeSetItem {
 
-  private final String id;
+  private  String id;
 
-  private final String author;
+  private  String author;
 
-  private final String order;
+  private  String order;
 
-  private final boolean runAlways;
+  private  boolean runAlways;
 
-  private final String systemVersion;
+  private  String systemVersion;
 
-  private final Method method;
+  private  Method method;
 
   public ChangeSetItem(String id, String author, String order, boolean runAlways, String systemVersion, Method method) {
     this.id = id;

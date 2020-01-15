@@ -32,14 +32,12 @@ public class SpringChangeService extends ChangeService {
 
   @Override
   public List<Class<?>> fetchChangeLogsSorted() {
-    List<Class<?>> changeLogs = super.fetchChangeLogsSorted();
-    return filterByActiveProfiles(changeLogs);
+    return filterByActiveProfiles(super.fetchChangeLogsSorted());
   }
 
   @Override
   public List<Method> fetchChangeSetsSorted(Class<?> type) throws MongockException {
-    final List<Method> changeSets = super.fetchChangeSetsSorted(type);
-    return filterByActiveProfiles(changeSets);
+    return filterByActiveProfiles(super.fetchChangeSetsSorted(type));
   }
 
 

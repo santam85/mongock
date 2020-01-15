@@ -4,13 +4,13 @@ import java.util.List;
 
 public class ChangeLogItem {
 
-  private final Class<?> type;
+  private  Class<?> type;
 
-  private final Object instance;
+  private  Object instance;
 
-  private final String order;
+  private  String order;
 
-  private final List<ChangeSetItem> changeSetElements;
+  private  List<ChangeSetItem> changeSetElements;
 
   public ChangeLogItem(Class<?> type, Object instance, String order, List<ChangeSetItem> changeSetElements) {
     this.type = type;
