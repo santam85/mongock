@@ -92,8 +92,17 @@ class ChangeService {
   public List<ChangeLogItem> fetchChangeLogs2() {
     return fetchChangeLogsSorted()
         .stream()
-        .map(type-> new ChangeLogItem(type, type.getAnnotation(ChangeLog.class).order(), fetchChangeSetFromClass(type)))
+        .map(this::buildChangeLogObject)
         .collect(Collectors.toList());
+  }
+
+  private ChangeLogItem buildChangeLogObject(Class<?> type) {
+    try {
+      Object instance = type.getConstructor().newInstance();
+      return new ChangeLogItem(type, instance, type.getAnnotation(ChangeLog.class).order(), fetchChangeSetFromClass(type));
+    } catch (Exception ex) {
+      throw new RuntimeException(ex);
+    }
   }
 
   private List<ChangeSetItem> fetchChangeSetFromClass(Class<?> type) {
