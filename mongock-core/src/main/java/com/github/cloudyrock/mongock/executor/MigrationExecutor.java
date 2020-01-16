@@ -3,6 +3,7 @@ package com.github.cloudyrock.mongock.executor;
 import com.github.cloudyrock.mongock.ChangeEntry;
 import com.github.cloudyrock.mongock.ChangeEntryMongo;
 import com.github.cloudyrock.mongock.ChangeEntryRepository;
+import com.github.cloudyrock.mongock.ChangeLogService;
 import com.github.cloudyrock.mongock.ChangeSet;
 import com.github.cloudyrock.mongock.LogUtils;
 import com.github.cloudyrock.mongock.MongockException;
@@ -13,11 +14,13 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 
 public class MigrationExecutor {
@@ -25,17 +28,26 @@ public class MigrationExecutor {
   private static final Logger logger = LoggerFactory.getLogger(MigrationExecutor.class);
 
   private final Function<Class, Optional<Object>> dependencyRetriever;
+  protected final ChangeLogService changeLogService;
+
   private final ChangeEntryRepository changeEntryRepository;
   private final Map<String, Object> metadata;
 
-  public MigrationExecutor(Function<Class, Optional<Object>> dependencyRetriever, ChangeEntryRepository changeEntryRepository, Map<String, Object> metadata) {
-    this.dependencyRetriever = dependencyRetriever;
+  public MigrationExecutor(ChangeLogService changeLogService,
+                           ChangeEntryRepository changeEntryRepository,
+                           Function<Class, Optional<Object>> dependencyRetriever,
+                           Map<String, Object> metadata) {
+    this.changeLogService = changeLogService;
     this.changeEntryRepository = changeEntryRepository;
+    this.dependencyRetriever = dependencyRetriever;
+
     this.metadata = metadata;
   }
 
-  public void executeMigration(String executionId, List<ChangeLogItem> changeLogs) {
-    logger.info("Mongock starting the data migration sequence..");
+  public void executeMigration() {
+    String executionId = String.format("%s.%s", LocalDateTime.now().toString(), UUID.randomUUID().toString());
+    logger.info("Mongock starting the data migration sequence id[{}]..", executionId);
+    List<ChangeLogItem> changeLogs = changeLogService.fetchChangeLogs();
     for (ChangeLogItem changeLog : changeLogs) {
       try {
         for (ChangeSetItem changeSet : changeLog.getChangeSetElements()) {

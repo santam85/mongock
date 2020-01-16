@@ -2,6 +2,9 @@ package com.github.cloudyrock.mongock;
 
 import com.mongodb.MongoClient;
 
+import java.util.Map;
+import java.util.Optional;
+
 public class MongockBuilder extends MongockBuilderBase<MongockBuilder, Mongock> {
 
   public MongockBuilder(MongoClient mongoClient, String databaseName, String changeLogsScanPackage) {
@@ -26,6 +29,7 @@ public class MongockBuilder extends MongockBuilderBase<MongockBuilder, Mongock> 
   protected ChangeLogService createChangeServiceInstance() {
     return new ChangeLogService();
   }
+
 
 
 }

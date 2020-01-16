@@ -21,7 +21,7 @@ import org.reflections.Reflections;
  *
  * @since 27/07/2014
  */
-class ChangeLogService {
+public class ChangeLogService {
 
   private String changeLogsBasePackage;
 
@@ -29,7 +29,7 @@ class ChangeLogService {
 
   private ArtifactVersion endVersion = new DefaultArtifactVersion(String.valueOf(Integer.MAX_VALUE));
 
-  ChangeLogService() {
+  public ChangeLogService() {
   }
 
   /**
@@ -38,7 +38,7 @@ class ChangeLogService {
    * @param changeLogsBasePackage path of the package
    */
   //Implementation note: This has been added, replacing constructor, to be able to inject this service as dependency
-  void setChangeLogsBasePackage(String changeLogsBasePackage) {
+  public void setChangeLogsBasePackage(String changeLogsBasePackage) {
     this.changeLogsBasePackage = changeLogsBasePackage;
   }
 
@@ -52,7 +52,7 @@ class ChangeLogService {
    */
   // Implementation note: This has been added, replacing constructor, to be
   // able to inject this service as dependency
-  void setEndVersion(String endVersion) {
+  public void setEndVersion(String endVersion) {
     this.endVersion = new DefaultArtifactVersion(endVersion);
   }
 
@@ -66,7 +66,7 @@ class ChangeLogService {
    */
   // Implementation note: This has been added, replacing constructor, to be
   // able to inject this service as dependency
-  void setStartVersion(String startVersion) {
+  public void setStartVersion(String startVersion) {
     this.startVersion = new DefaultArtifactVersion(startVersion);
   }
 
@@ -106,14 +106,14 @@ class ChangeLogService {
   }
 
   @SuppressWarnings("unchecked")
-  List<Method> fetchChangeSetsSorted(final Class<?> type) throws MongockException {
+  public List<Method> fetchChangeSetsSorted(final Class<?> type) throws MongockException {
     final List<Method> changeSets = filterChangeSetAnnotation(asList(type.getDeclaredMethods()));
     changeSets.sort(new ChangeSetComparator());
     return changeSets;
   }
 
   @Deprecated
-  ChangeEntry createChangeEntry(String executionId, Method changesetMethod, Map<String, Object> metadata) {
+  public ChangeEntry createChangeEntry(String executionId, Method changesetMethod, Map<String, Object> metadata) {
     if (changesetMethod.isAnnotationPresent(ChangeSet.class)) {
       ChangeSet annotation = changesetMethod.getAnnotation(ChangeSet.class);
 

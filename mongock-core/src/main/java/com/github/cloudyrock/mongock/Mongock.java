@@ -4,22 +4,18 @@ import com.github.cloudyrock.mongock.executor.MigrationExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * Mongock runner
  *
  * @since 26/07/2014
  */
-public class Mongock  {
+public class Mongock {
   private static final Logger logger = LoggerFactory.getLogger(Mongock.class);
-
-  protected final ChangeEntryRepository changeEntryRepository;
-  protected final ChangeLogService changeLogService;
+  private final MigrationExecutor executor;
   protected final LockChecker lockChecker;
   private final boolean throwExceptionIfCannotObtainLock;
   private final boolean enabled;
@@ -28,26 +24,17 @@ public class Mongock  {
   private Map<Class, Object> dependencies = new HashMap<>();
 
 
-//  protected Mongock(
-//      ChangeEntryRepository changeEntryRepository,
-//      ChangeLogService changeLogService,
-//      LockChecker lockChecker,
-//      boolean throwExceptionIfCannotObtainLock) {
-//    this(changeEntryRepository,changeLogService, lockChecker, throwExceptionIfCannotObtainLock, true);
-//  }
-
-
   protected Mongock(
       ChangeEntryRepository changeEntryRepository,
       ChangeLogService changeLogService,
       LockChecker lockChecker,
       boolean throwExceptionIfCannotObtainLock,
       boolean enabled) {
-    this.changeEntryRepository = changeEntryRepository;
-    this.changeLogService = changeLogService;
     this.lockChecker = lockChecker;
     this.throwExceptionIfCannotObtainLock = throwExceptionIfCannotObtainLock;
     this.enabled = enabled;
+    executor = new MigrationExecutor(changeLogService, changeEntryRepository, this::getDependency, metadata);
+
   }
 
   /**
@@ -71,11 +58,7 @@ public class Mongock  {
 
       try {
         lockChecker.acquireLockDefault();
-        //TODO executor should be injected
-        MigrationExecutor executor = new MigrationExecutor(this::getDependency, changeEntryRepository, metadata);
-        //TODO executionId may be moved to a executionIdGenerator
-        String executionId = String.format("%s.%s", LocalDateTime.now().toString(), UUID.randomUUID().toString());
-        executor.executeMigration(executionId, changeLogService.fetchChangeLogs());
+        executor.executeMigration();
       } catch (LockCheckException lockEx) {
 
         if (throwExceptionIfCannotObtainLock) {
@@ -101,7 +84,6 @@ public class Mongock  {
   }
 
 
-
   //todo delegate to executor
   void setMetadata(Map<String, Object> metadata) {
     this.metadata = metadata;
@@ -111,10 +93,10 @@ public class Mongock  {
   <T> void addChangeSetDependency(Class<T> type, T dependency) {
     this.dependencies.put(type, dependency);
   }
+
   void addChangeSetDependency(Object dependency) {
     this.dependencies.put(dependency.getClass(), dependency);
   }
-
 
 
 }
