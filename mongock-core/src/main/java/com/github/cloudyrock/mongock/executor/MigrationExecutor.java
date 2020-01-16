@@ -5,7 +5,6 @@ import com.github.cloudyrock.mongock.ChangeEntryMongo;
 import com.github.cloudyrock.mongock.ChangeEntryRepository;
 import com.github.cloudyrock.mongock.ChangeSet;
 import com.github.cloudyrock.mongock.LogUtils;
-import com.github.cloudyrock.mongock.Mongock;
 import com.github.cloudyrock.mongock.MongockException;
 import com.github.cloudyrock.mongock.change.ChangeLogItem;
 import com.github.cloudyrock.mongock.change.ChangeSetItem;
@@ -16,7 +15,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -80,6 +78,7 @@ public class MigrationExecutor {
   }
 
   @Deprecated
+  //TODO figure out how to fix this: could be a factory, specialization class, etc.
   private ChangeEntry createChangeEntry(String executionId, Method changesetMethod, Map<String, Object> metadata) {
     if (changesetMethod.isAnnotationPresent(ChangeSet.class)) {
       ChangeSet annotation = changesetMethod.getAnnotation(ChangeSet.class);

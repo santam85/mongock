@@ -11,7 +11,7 @@ public class SpringBootMongock extends Mongock implements ApplicationRunner {
 
   private ApplicationContext springContext;
 
-  SpringBootMongock(ChangeEntryRepository changeEntryRepository, ChangeLogService changeService, LockChecker lockChecker) {
+  SpringBootMongock(ChangeEntryRepository changeEntryRepository, SpringChangeLogService changeService, LockChecker lockChecker) {
     super(changeEntryRepository, changeService, lockChecker);
   }
 

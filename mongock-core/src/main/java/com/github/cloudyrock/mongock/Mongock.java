@@ -50,30 +50,6 @@ public class Mongock  {
     return enabled;
   }
 
-  void setMetadata(Map<String, Object> metadata) {
-    this.metadata = metadata;
-  }
-
-  void setThrowExceptionIfCannotObtainLock(boolean throwExceptionIfCannotObtainLock) {
-    this.throwExceptionIfCannotObtainLock = throwExceptionIfCannotObtainLock;
-  }
-
-  void setEnabled(boolean enabled) {
-    this.enabled = enabled;
-  }
-
-  void addChangeSetDependency(Object dependency) {
-    this.dependencies.put(dependency.getClass(), dependency);
-  }
-
-  /**
-   * This method just forces the type in cases where is needed to override
-   * a dependency with a child class
-   */
-  <T> void addChangeSetDependency(Class<T> type, T dependency) {
-    this.dependencies.put(type, dependency);
-  }
-
   public void execute() {
     if (!isEnabled()) {
       logger.info("Mongock is disabled. Exiting.");
@@ -103,6 +79,19 @@ public class Mongock  {
     }
   }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
   //TODO kept just for Spring child. Remove
   @Deprecated
   protected Optional<Object> getDependency(Class type) {
@@ -112,6 +101,31 @@ public class Mongock  {
         .findFirst();
   }
 
+
+
+  //todo delegate to executor
+  void setMetadata(Map<String, Object> metadata) {
+    this.metadata = metadata;
+  }
+
+  //todo delegate this to executor
+  <T> void addChangeSetDependency(Class<T> type, T dependency) {
+    this.dependencies.put(type, dependency);
+  }
+  void addChangeSetDependency(Object dependency) {
+    this.dependencies.put(dependency.getClass(), dependency);
+  }
+
+  //todo move to constructor and final(only  allowed to be edited/set at building time)
+  void setThrowExceptionIfCannotObtainLock(boolean throwExceptionIfCannotObtainLock) {
+    this.throwExceptionIfCannotObtainLock = throwExceptionIfCannotObtainLock;
+  }
+
+  //todo move to constructor and final(only  allowed to be edited/set at building time). This can be done from an static constructor
+  //like Mongock.disabledInstance(...) and Mongock.instance(...)
+  void setEnabled(boolean enabled) {
+    this.enabled = enabled;
+  }
 
 
 }
