@@ -22,19 +22,32 @@ public class Mongock  {
   protected final ChangeLogService changeLogService;
   protected final LockChecker lockChecker;
   private final boolean throwExceptionIfCannotObtainLock;
-  private boolean enabled;
+  private final boolean enabled;
+
   private Map<String, Object> metadata;
   private Map<Class, Object> dependencies = new HashMap<>();
+
+
+//  protected Mongock(
+//      ChangeEntryRepository changeEntryRepository,
+//      ChangeLogService changeLogService,
+//      LockChecker lockChecker,
+//      boolean throwExceptionIfCannotObtainLock) {
+//    this(changeEntryRepository,changeLogService, lockChecker, throwExceptionIfCannotObtainLock, true);
+//  }
+
 
   protected Mongock(
       ChangeEntryRepository changeEntryRepository,
       ChangeLogService changeLogService,
       LockChecker lockChecker,
-      boolean throwExceptionIfCannotObtainLock) {
+      boolean throwExceptionIfCannotObtainLock,
+      boolean enabled) {
     this.changeEntryRepository = changeEntryRepository;
     this.changeLogService = changeLogService;
     this.lockChecker = lockChecker;
     this.throwExceptionIfCannotObtainLock = throwExceptionIfCannotObtainLock;
+    this.enabled = enabled;
   }
 
   /**
@@ -102,13 +115,6 @@ public class Mongock  {
     this.dependencies.put(dependency.getClass(), dependency);
   }
 
-
-
-  //todo move to constructor and final(only  allowed to be edited/set at building time). This can be done from an static constructor
-  //like Mongock.disabledInstance(...) and Mongock.instance(...)
-  void setEnabled(boolean enabled) {
-    this.enabled = enabled;
-  }
 
 
 }

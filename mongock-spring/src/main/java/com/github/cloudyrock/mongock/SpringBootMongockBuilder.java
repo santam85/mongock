@@ -59,6 +59,7 @@ public class SpringBootMongockBuilder extends SpringMongockBuilderBase<SpringBoo
         (SpringChangeLogService)createChangeService(),
         lockChecker,
         throwExceptionIfCannotObtainLock,
+        enabled,
         context,
         createMongoTemplateProxy());
   }

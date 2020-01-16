@@ -76,10 +76,10 @@ public class MongockTestBase {
         changeEntryRepository,
         changeService,
         lockChecker,
+        true,
         true);
 
     temp.addChangeSetDependency(fakeMongoDatabase);
-    temp.setEnabled(true);
     runner = spy(temp);
 
   }

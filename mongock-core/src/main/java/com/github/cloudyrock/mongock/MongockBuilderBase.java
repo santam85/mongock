@@ -187,7 +187,6 @@ public abstract class MongockBuilderBase<BUILDER_TYPE extends MongockBuilderBase
     changeEntryRepository = createChangeRepository();
     MONGOCK_TYPE mongock = this.createMongockInstance();
     mongock.addChangeSetDependency(createMongoDataBaseProxy());
-    mongock.setEnabled(enabled);
     mongock.setMetadata(this.metadata);
     return mongock;
   }

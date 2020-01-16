@@ -19,7 +19,7 @@ public class MongockBuilder extends MongockBuilderBase<MongockBuilder, Mongock> 
 
   @Override
   protected Mongock createMongockInstance() {
-    return new Mongock(changeEntryRepository, createChangeService(), lockChecker, throwExceptionIfCannotObtainLock);
+    return new Mongock(changeEntryRepository, createChangeService(), lockChecker, throwExceptionIfCannotObtainLock, enabled);
   }
 
   @Override
