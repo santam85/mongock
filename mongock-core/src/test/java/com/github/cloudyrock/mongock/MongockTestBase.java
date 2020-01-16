@@ -40,7 +40,7 @@ public class MongockTestBase {
   protected LockRepository lockRepository;
 
   @Spy
-  protected ChangeService changeService;
+  protected ChangeLogService changeService;
 
   protected MongoClient mongoClient;
 
@@ -74,7 +74,6 @@ public class MongockTestBase {
 
     Mongock temp = new Mongock(
         changeEntryRepository,
-        mongoClient,
         changeService,
         lockChecker);
 

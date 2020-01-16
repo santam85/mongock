@@ -13,7 +13,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 
-public class SpringChangeService extends ChangeService {
+public class SpringChangeLogService extends ChangeLogService {
 
   private static final String DEFAULT_PROFILE = "default";
 

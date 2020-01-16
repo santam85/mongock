@@ -39,7 +39,7 @@ public class SpringBootMongockTestBase extends IndependentDbIntegrationTestBase 
 
 
   @Spy
-  protected SpringChangeService changeService;
+  protected SpringChangeLogService changeService;
 
   @Mock
   private MongoRepositoryBase indexDao;
@@ -59,7 +59,6 @@ public class SpringBootMongockTestBase extends IndependentDbIntegrationTestBase 
 
     SpringBootMongock temp = new SpringBootMongock(
         changeEntryRepository,
-        mongoClient,
         changeService,
         lockChecker);
 

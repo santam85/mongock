@@ -57,8 +57,8 @@ abstract class SpringMongockBuilderBase<BUILDER_TYPE extends SpringMongockBuilde
 
 
   @Override
-  protected  final ChangeService createChangeServiceInstance() {
-    SpringChangeService changeService = new SpringChangeService();
+  protected  final ChangeLogService createChangeServiceInstance() {
+    SpringChangeLogService changeService = new SpringChangeLogService();
     changeService.setEnvironment(springEnvironment);
     return changeService;
   }

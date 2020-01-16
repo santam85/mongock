@@ -21,7 +21,7 @@ public class SpringChangeServiceTest {
   @Test
   public void shouldRunChangeSets_WhenDefaultProfileEnv_IfOnlyNegativeProfileInAnnotationOrNoAnnotation() {
     Mockito.when(environment.getActiveProfiles()).thenReturn(new String[]{});
-    SpringChangeService service = new SpringChangeService();
+    SpringChangeLogService service = new SpringChangeLogService();
     service.setEnvironment(environment);
     assertEquals(service.fetchChangeSetsSorted(ChangeLogClass.class).size(), 4);
   }
@@ -30,7 +30,7 @@ public class SpringChangeServiceTest {
   @Test
   public void shouldRunChangeSets_When1NonDefaultProfileEnv_IfPresentInAnnotationOrNoAnnotationOrOnlyOtherNegatives() {
     Mockito.when(environment.getActiveProfiles()).thenReturn(new String[]{"test"});
-    SpringChangeService service = new SpringChangeService();
+    SpringChangeLogService service = new SpringChangeLogService();
     service.setEnvironment(environment);
     assertEquals(service.fetchChangeSetsSorted(ChangeLogClass.class).size(), 4);
   }
@@ -39,7 +39,7 @@ public class SpringChangeServiceTest {
   @Test
   public void shouldRunChangeSets_WhenMultipleNonDefaultProfileEnv_IfPresentInAnnotationOrNoAnnotationOrOnlyOtherNegatives() {
     Mockito.when(environment.getActiveProfiles()).thenReturn(new String[]{"test", "dataset"});
-    SpringChangeService service = new SpringChangeService();
+    SpringChangeLogService service = new SpringChangeLogService();
     service.setEnvironment(environment);
     assertEquals(service.fetchChangeSetsSorted(ChangeLogClass.class).size(), 5);
   }

@@ -36,7 +36,7 @@ public class SpringMongockBuilder extends SpringMongockBuilderBase<SpringMongock
 
   @Override
   protected SpringMongock createMongockInstance() {
-    SpringMongock mongock = new SpringMongock(changeEntryRepository, getMongoClientCloseable(), createChangeService(), lockChecker);
+    SpringMongock mongock = new SpringMongock(changeEntryRepository, createChangeService(), lockChecker);
     mongock.addChangeSetDependency(Environment.class, this.getSpringEnvironment());
     mongock.addChangeSetDependency(MongoTemplate.class, createMongoTemplateProxy());
     return mongock;

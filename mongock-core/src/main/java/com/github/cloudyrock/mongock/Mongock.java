@@ -1,47 +1,38 @@
 package com.github.cloudyrock.mongock;
 
-import com.github.cloudyrock.mongock.change.ChangeLogItem;
-import com.github.cloudyrock.mongock.change.ChangeSetItem;
+import com.github.cloudyrock.mongock.executor.MigrationExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
 /**
  * Mongock runner
  *
  * @since 26/07/2014
  */
-public class Mongock implements Closeable {
+public class Mongock  {
   private static final Logger logger = LoggerFactory.getLogger(Mongock.class);
 
   protected final ChangeEntryRepository changeEntryRepository;
-  protected final ChangeService changeService;
+  protected final ChangeLogService changeLogService;
   protected final LockChecker lockChecker;
-  protected final Closeable mongoClientCloseable;
 
   private boolean throwExceptionIfCannotObtainLock;
   private boolean enabled;
-  protected Map<String, Object> metadata;
-  protected Map<Class, Object> dependencies = new HashMap<>();
+  private Map<String, Object> metadata;
+  private Map<Class, Object> dependencies = new HashMap<>();
 
   protected Mongock(
       ChangeEntryRepository changeEntryRepository,
-      Closeable mongoClientCloseable,
-      ChangeService changeService,
+      ChangeLogService changeLogService,
       LockChecker lockChecker) {
     this.changeEntryRepository = changeEntryRepository;
-    this.mongoClientCloseable = mongoClientCloseable;
-    this.changeService = changeService;
+    this.changeLogService = changeLogService;
     this.lockChecker = lockChecker;
   }
 
@@ -86,80 +77,34 @@ public class Mongock implements Closeable {
   public void execute() {
     if (!isEnabled()) {
       logger.info("Mongock is disabled. Exiting.");
-      return;
-    }
-
-    try {
-      lockChecker.acquireLockDefault();
-      executeMigration();
-    } catch (LockCheckException lockEx) {
-
-      if (throwExceptionIfCannotObtainLock) {
-        logger.error(lockEx.getMessage());//only message as the exception is propagated
-        throw new MongockException(lockEx.getMessage());
-      } else {
-        logger.warn(lockEx.getMessage());
-        logger.warn("Mongock did not acquire process lock. EXITING WITHOUT RUNNING DATA MIGRATION");
-      }
-
-    } finally {
-      lockChecker.releaseLockDefault();//we do it anyway, it's idempotent
-      logger.info("Mongock has finished his job.");
-    }
-
-  }
-
-  /**
-   * Closes the Mongo instance used by Mongock.
-   * This will close either the connection Mongock was initiated with or that which was internally created.
-   */
-  public void close() throws IOException {
-    mongoClientCloseable.close();
-  }
-
-
-  private void executeMigration() {
-    logger.info("Mongock starting the data migration sequence..");
-    final String executionId = changeService.getNewExecutionId();
-    for (ChangeLogItem changeLog : changeService.fetchChangeLogs2()) {
+    } else {
 
       try {
-        List<ChangeSetItem> changeSets = changeLog.getChangeSetElements();
-        for (ChangeSetItem changeSet : changeSets) {
-          executeIfNewOrRunAlways(executionId, changeLog.getInstance(), changeSet);
+        lockChecker.acquireLockDefault();
+        //TODO executor should be injected
+        MigrationExecutor executor = new MigrationExecutor(this.dependencies, changeEntryRepository, metadata);
+        //TODO executionId may be moved to a executionIdGenerator
+        String executionId = String.format("%s.%s", LocalDateTime.now().toString(), UUID.randomUUID().toString());
+        executor.executeMigration(executionId, changeLogService.fetchChangeLogs());
+      } catch (LockCheckException lockEx) {
+
+        if (throwExceptionIfCannotObtainLock) {
+          logger.error(lockEx.getMessage());//only message as the exception is propagated
+          throw new MongockException(lockEx.getMessage());
+        } else {
+          logger.warn(lockEx.getMessage());
+          logger.warn("Mongock did not acquire process lock. EXITING WITHOUT RUNNING DATA MIGRATION");
         }
 
-      } catch (IllegalAccessException e) {
-        throw new MongockException(e.getMessage(), e);
-      } catch (InvocationTargetException e) {
-        Throwable targetException = e.getTargetException();
-        throw new MongockException(targetException.getMessage(), e);
+      } finally {
+        lockChecker.releaseLockDefault();//we do it anyway, it's idempotent
+        logger.info("Mongock has finished his job.");
       }
-
     }
   }
 
-  private void executeIfNewOrRunAlways(String executionId, Object changelogInstance, ChangeSetItem changeSet) throws IllegalAccessException, InvocationTargetException {
-    try {
-      ChangeEntry changeEntry = changeService.createChangeEntry(executionId, changeSet.getMethod(), this.metadata);
-      if (changeEntryRepository.isNewChange(changeEntry)) {
-        final long executionTimeMillis = executeChangeSetMethod(changeSet.getMethod(), changelogInstance);
-        changeEntry.setExecutionMillis(executionTimeMillis);
-        changeEntryRepository.save(changeEntry);
-        logger.info("APPLIED - {}", changeEntry);
-      } else if (changeService.isRunAlwaysChangeSet(changeSet.getMethod())) {
-        final long executionTimeMillis = executeChangeSetMethod(changeSet.getMethod(), changelogInstance);
-        changeEntry.setExecutionMillis(executionTimeMillis);
-        changeEntryRepository.save(changeEntry);
-        logger.info("RE-APPLIED - {}", changeEntry);
-      } else {
-        logger.info("PASSED OVER - {}", changeEntry);
-      }
-    } catch (MongockException e) {
-      logger.error(e.getMessage(), e);
-    }
-  }
-
+  //TODO kept just for Spring child. Remove
+  @Deprecated
   protected Optional<Object> getDependency(Class type) {
     return this.dependencies.entrySet().stream()
         .filter(entrySet -> type.isAssignableFrom(entrySet.getKey()))
@@ -167,28 +112,6 @@ public class Mongock implements Closeable {
         .findFirst();
   }
 
-  private long executeChangeSetMethod(Method changeSetMethod, Object changeLogInstance)
-      throws IllegalAccessException, InvocationTargetException {
-    final long startingTime = System.currentTimeMillis();
-    List<Object> changelogInvocationParameters = new ArrayList<>(changeSetMethod.getParameterTypes().length);
-    for (Class<?> parameter : changeSetMethod.getParameterTypes()) {
-      Optional<Object> parameterOptional = this.getDependency(parameter);
-      if (parameterOptional.isPresent()) {
-        changelogInvocationParameters.add(parameterOptional.get());
-      } else {
-        throw new MongockException(String.format("Method[%s] using argument[%s] not injected", changeSetMethod.getName(), parameter.getName()));
-      }
-    }
-    logMethodWithArguments(changeSetMethod.getName(), changelogInvocationParameters);
-    changeSetMethod.invoke(changeLogInstance, changelogInvocationParameters.toArray());
-    return System.currentTimeMillis() - startingTime;
-  }
 
-  private void logMethodWithArguments(String methodName, List<Object> changelogInvocationParameters) {
-    String arguments = changelogInvocationParameters.stream()
-        .map(obj -> obj != null ? obj.getClass().getName() : "{null argument}")
-        .collect(Collectors.joining(", "));
-    logger.info("method[{}] with arguments: [{}]", methodName, arguments);
 
-  }
 }

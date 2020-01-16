@@ -3,7 +3,6 @@ package com.github.cloudyrock.mongock;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -22,7 +21,7 @@ import org.reflections.Reflections;
  *
  * @since 27/07/2014
  */
-class ChangeService {
+class ChangeLogService {
 
   private String changeLogsBasePackage;
 
@@ -30,16 +29,7 @@ class ChangeService {
 
   private ArtifactVersion endVersion = new DefaultArtifactVersion(String.valueOf(Integer.MAX_VALUE));
 
-  ChangeService() {
-  }
-
-  private static boolean isProfileAnnotationPresent() {
-    try {
-      Class.forName("org.springframework.context.annotation.Profile");
-      return true;
-    } catch (Exception ex) {
-      return false;
-    }
+  ChangeLogService() {
   }
 
   /**
@@ -89,7 +79,7 @@ class ChangeService {
   }
 
 
-  public List<ChangeLogItem> fetchChangeLogs2() {
+  public List<ChangeLogItem> fetchChangeLogs() {
     return fetchChangeLogsSorted()
         .stream()
         .map(this::buildChangeLogObject)
@@ -122,23 +112,7 @@ class ChangeService {
     return changeSets;
   }
 
-  boolean isRunAlwaysChangeSet(Method changesetMethod) {
-    if (changesetMethod.isAnnotationPresent(ChangeSet.class)) {
-      ChangeSet annotation = changesetMethod.getAnnotation(ChangeSet.class);
-      return annotation.runAlways();
-    } else {
-      return false;
-    }
-  }
-
-  /**
-   * Quick implementation to generate a execution id. date plus uuid. The date is for easier human identification
-   * @return unique execution id
-   */
-  String getNewExecutionId() {
-    return String.format("%s.%s", LocalDateTime.now().toString(), UUID.randomUUID().toString());
-  }
-
+  @Deprecated
   ChangeEntry createChangeEntry(String executionId, Method changesetMethod, Map<String, Object> metadata) {
     if (changesetMethod.isAnnotationPresent(ChangeSet.class)) {
       ChangeSet annotation = changesetMethod.getAnnotation(ChangeSet.class);
@@ -156,41 +130,34 @@ class ChangeService {
     }
   }
 
-  /**
-   * <p>It creates an instance from a given Class.</p>
-   *
-   * @param changelogClass class to create the instance from
-   * @param <T>            Class parameter
-   * @return an instance of the given class
-   * @throws NoSuchMethodException     If reflection fails
-   * @throws InvocationTargetException If reflection fails
-   * @throws InstantiationException    If reflection fails
-   */
-  //Implementation note: It has been added as a more flexible way to get the changeLog objects and make easier testing.
-  <T> T createInstance(Class<T> changelogClass) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-    return changelogClass.getConstructor().newInstance();
-  }
-
 
   private List<Method> filterChangeSetAnnotation(List<Method> allMethods) throws MongockException {
     final Set<String> changeSetIds = new HashSet<>();
-    final List<Method> changesetMethods = new ArrayList<>();
+    final List<Method> changeSetMethods = new ArrayList<>();
     for (final Method method : allMethods) {
       if (method.isAnnotationPresent(ChangeSet.class)) {
         String id = method.getAnnotation(ChangeSet.class).id();
         if (changeSetIds.contains(id)) {
           throw new MongockException(String.format("Duplicated changeset id found: '%s'", id));
         }
-
         changeSetIds.add(id);
-        String versionString = method.getAnnotation(ChangeSet.class).systemVersion();
-        ArtifactVersion version = new DefaultArtifactVersion(versionString);
-        if (version.compareTo(startVersion) >= 0 && version.compareTo(endVersion) < 0) {
-          changesetMethods.add(method);
+        if(isChangeSetWithinSystemVersionRange(method.getAnnotation(ChangeSet.class))) {
+          changeSetMethods.add(method);
         }
       }
     }
-    return changesetMethods;
+    return changeSetMethods;
+  }
+
+  //todo Create a SystemVersionChecker
+  private boolean isChangeSetWithinSystemVersionRange(ChangeSet changeSetAnn) {
+    boolean isWithinVersion = false;
+    String versionString = changeSetAnn.systemVersion();
+    ArtifactVersion version = new DefaultArtifactVersion(versionString);
+    if (version.compareTo(startVersion) >= 0 && version.compareTo(endVersion) < 0) {
+      isWithinVersion = true;
+    }
+    return isWithinVersion;
   }
 
   private static class ChangeLogComparator implements Comparator<Class<?>>, Serializable {

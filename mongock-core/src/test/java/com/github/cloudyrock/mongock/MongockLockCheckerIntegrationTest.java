@@ -31,7 +31,7 @@ public class MongockLockCheckerIntegrationTest extends IndependentDbIntegrationT
 
   private static final String LOCK_COLLECTION_NAME = "mongocklock";
   private Mongock runner;
-  private ChangeService changeService;
+  private ChangeLogService changeService;
   private LockRepository lockRepository;
   private TimeUtils timeUtils;
   private LockChecker lockChecker;
@@ -48,7 +48,7 @@ public class MongockLockCheckerIntegrationTest extends IndependentDbIntegrationT
         .setThrowExceptionIfCannotObtainLock(true);
 
     timeUtils = spy(new TimeUtils());
-    changeService = spy(new ChangeService());
+    changeService = spy(new ChangeLogService());
     lockRepository = spy(new LockMongoRepository(LOCK_COLLECTION_NAME, db));
 
     lockChecker = spy(new LockChecker(lockRepository, timeUtils));
@@ -173,7 +173,7 @@ public class MongockLockCheckerIntegrationTest extends IndependentDbIntegrationT
 
 class TestMongockBuilder extends MongockBuilderBase<TestMongockBuilder, Mongock> {
 
-  private ChangeService changeService;
+  private ChangeLogService changeService;
   private MongoDatabase mongoDataBase;
   private ChangeEntryRepository changeEntryRepository;
   private LockChecker lockChecker;
@@ -189,7 +189,7 @@ class TestMongockBuilder extends MongockBuilderBase<TestMongockBuilder, Mongock>
   }
 
   Mongock build(ChangeEntryRepository changeEntryRepository,
-                ChangeService changeService,
+                ChangeLogService changeService,
                 LockChecker lockChecker,
                 MongoDatabase mongoDatabase) {
     this.changeEntryRepository = changeEntryRepository;
@@ -201,8 +201,8 @@ class TestMongockBuilder extends MongockBuilderBase<TestMongockBuilder, Mongock>
 
   @Override
   protected Mongock createMongockInstance() {
-//    changeService.setChangeLogsBasePackage(changeLogsScanPackage);
-    Mongock mongock = new Mongock(changeEntryRepository, getMongoClientCloseable(), changeService, lockChecker);
+//    changeLogService.setChangeLogsBasePackage(changeLogsScanPackage);
+    Mongock mongock = new Mongock(changeEntryRepository, changeService, lockChecker);
     mongock.addChangeSetDependency(mongoDataBase);
     mongock.setEnabled(enabled);
     mongock.setThrowExceptionIfCannotObtainLock(throwExceptionIfCannotObtainLock);
@@ -210,7 +210,7 @@ class TestMongockBuilder extends MongockBuilderBase<TestMongockBuilder, Mongock>
   }
 
   @Override
-  protected ChangeService createChangeServiceInstance() {
+  protected ChangeLogService createChangeServiceInstance() {
     return null;
   }
 }

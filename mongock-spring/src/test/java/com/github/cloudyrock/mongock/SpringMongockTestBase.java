@@ -42,7 +42,7 @@ public class SpringMongockTestBase {
   protected LockRepository lockRepository;
 
   @Spy
-  protected SpringChangeService changeService;
+  protected SpringChangeLogService changeService;
 
   protected MongoClient mongoClient;
 
@@ -73,7 +73,6 @@ public class SpringMongockTestBase {
 
     SpringMongock temp = new SpringMongock(
         changeEntryRepository,
-        mongoClient,
         changeService,
         lockChecker);
 

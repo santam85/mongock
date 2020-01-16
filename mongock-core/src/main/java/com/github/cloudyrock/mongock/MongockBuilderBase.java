@@ -198,9 +198,6 @@ public abstract class MongockBuilderBase<BUILDER_TYPE extends MongockBuilderBase
     return mongoClient != null ? mongoClient.getDatabase(databaseName) : legacyMongoClient.getDatabase(databaseName);
   }
 
-  Closeable getMongoClientCloseable() {
-    return mongoClient != null ? mongoClient : legacyMongoClient;
-  }
 
   private LockChecker createLockChecker() {
     LockRepository lockRepository = new LockMongoRepository(lockCollectionName, database);
@@ -224,8 +221,8 @@ public abstract class MongockBuilderBase<BUILDER_TYPE extends MongockBuilderBase
     return new MongoDataBaseDecoratorImpl(getDataBaseFromMongoClient(), methodInvoker);
   }
 
-  protected final ChangeService createChangeService() {
-    ChangeService changeService = createChangeServiceInstance();
+  protected final ChangeLogService createChangeService() {
+    ChangeLogService changeService = createChangeServiceInstance();
     changeService.setChangeLogsBasePackage(changeLogsScanPackage);
     changeService.setStartVersion(startSystemVersion);
     changeService.setEndVersion(endSystemVersion);
@@ -233,7 +230,7 @@ public abstract class MongockBuilderBase<BUILDER_TYPE extends MongockBuilderBase
   }
 
   protected abstract MONGOCK_TYPE createMongockInstance();
-  protected abstract ChangeService createChangeServiceInstance();
+  protected abstract ChangeLogService createChangeServiceInstance();
   protected abstract BUILDER_TYPE returnInstance();
 
 

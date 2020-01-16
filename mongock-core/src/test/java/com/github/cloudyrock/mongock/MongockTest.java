@@ -39,7 +39,7 @@ public class MongockTest extends IndependentDbIntegrationTestBase {
   private Mongock runner;
 
   @Spy
-  protected ChangeService changeService;
+  protected ChangeLogService changeService;
   @Mock
   protected ChangeEntryMongoRepository changeEntryRepository;
   @Mock
@@ -59,7 +59,7 @@ public class MongockTest extends IndependentDbIntegrationTestBase {
     changeService.setChangeLogsBasePackage(MongockTestResource.class.getPackage().getName());
     mongoClient = MongockTestBase.getFakeNewMongoClient(db);
 
-    Mongock temp = new Mongock(changeEntryRepository, mongoClient, changeService, lockChecker);
+    Mongock temp = new Mongock(changeEntryRepository, changeService, lockChecker);
 
     temp.addChangeSetDependency(MongoDatabase.class, db);
     temp.setEnabled(true);
@@ -188,15 +188,6 @@ public class MongockTest extends IndependentDbIntegrationTestBase {
     verify(lockChecker).releaseLockDefault();
   }
 
-  @Test
-  public void callMongoClientWhenClosing() throws IOException {
-    //when
-    runner.close();
-
-    //then
-    verify(mongoClient).close();
-  }
-
 //  @Test
 //  public void shouldCallLockRepositoryWhenSetLockCollectionName() {
 //    //when
@@ -213,10 +204,6 @@ public class MongockTest extends IndependentDbIntegrationTestBase {
     ProxiesMongockTestResource changeLog = mock(ProxiesMongockTestResource.class);
 
     when(changeEntryRepository.isNewChange(any(ChangeEntryMongo.class))).thenReturn(true);
-    //TODO make this return a changeLogItem properly
-    doReturn(Collections.singletonList(ProxiesMongockTestResource.class))
-        .when(changeService).fetchChangeLogs2();
-    doReturn(changeLog).when(changeService).createInstance(any(Class.class));
     doReturn(Collections.singletonList(ProxiesMongockTestResource.class.getDeclaredMethod("testMongoDatabase", MongoDatabase.class)))
         .when(changeService).fetchChangeSetsSorted(any(Class.class));
 

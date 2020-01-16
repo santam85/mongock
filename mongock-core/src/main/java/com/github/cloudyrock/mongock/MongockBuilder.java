@@ -19,12 +19,12 @@ public class MongockBuilder extends MongockBuilderBase<MongockBuilder, Mongock> 
 
   @Override
   protected Mongock createMongockInstance() {
-    return new Mongock(changeEntryRepository, getMongoClientCloseable(), createChangeService(), lockChecker);
+    return new Mongock(changeEntryRepository, createChangeService(), lockChecker);
   }
 
   @Override
-  protected ChangeService createChangeServiceInstance() {
-    return new ChangeService();
+  protected ChangeLogService createChangeServiceInstance() {
+    return new ChangeLogService();
   }
 
 
