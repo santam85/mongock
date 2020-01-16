@@ -13,18 +13,13 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
-/**
- * Tests for Spring profiles integration
- *
- *
- * @since 2014-09-17
- */
+
 @RunWith(MockitoJUnitRunner.class)
 public class SpringMongockProfileTest extends SpringMongockTestBase {
   private static final int CHANGELOG_COUNT = 11;
 
   @Test
-  public void shouldRunDevProfileAndNonAnnotated() throws Exception {
+  public void shouldRunDevProfileAndNonAnnotated() {
     // given
     changeService.setEnvironment(new EnvironmentMock("dev", "test"));
     changeService.setChangeLogsBasePackage(ProfiledDevChangeLog.class.getPackage().getName());
@@ -32,8 +27,6 @@ public class SpringMongockProfileTest extends SpringMongockTestBase {
 
     // when
     runner.execute();
-
-    long count = mongoDatabase.getCollection(CHANGELOG_COLLECTION_NAME).count();
 
     // then
     long change1 = mongoDatabase.getCollection(CHANGELOG_COLLECTION_NAME)
@@ -56,7 +49,7 @@ public class SpringMongockProfileTest extends SpringMongockTestBase {
   }
 
   @Test
-  public void shouldRunUnprofiledChangeLog() throws Exception {
+  public void shouldRunUnprofiledChangeLog() {
     // given
     changeService.setChangeLogsBasePackage(UnProfiledChangeLog.class.getPackage().getName());
     TestUtils.setField(runner, "springEnvironment", new EnvironmentMock("test"));
@@ -98,10 +91,10 @@ public class SpringMongockProfileTest extends SpringMongockTestBase {
   }
 
   @Test
-  public void shouldNotRunAnyChangeSet() throws Exception {
+  public void shouldNotRunAnyChangeSet() {
     // given
     changeService.setChangeLogsBasePackage(ProfiledDevChangeLog.class.getPackage().getName());
-    TestUtils.setField(runner, "springEnvironment", new EnvironmentMock("foobar"));
+    TestUtils.setField(runner, "springEnvironment", new EnvironmentMock("no-profile"));
     when(changeEntryRepository.isNewChange(any(ChangeEntryMongo.class))).thenReturn(true);
 
     // when
@@ -113,7 +106,22 @@ public class SpringMongockProfileTest extends SpringMongockTestBase {
   }
 
   @Test
-  public void shouldRunChangeSetsWhenNoEnv() throws Exception {
+  public void shouldNotRunChangeLog_IfProfileAdded_WhenProfileNotMatchingChangeLog() {
+    // given
+    changeService.setChangeLogsBasePackage(ProfiledDevChangeLog.class.getPackage().getName());
+    TestUtils.setField(runner, "springEnvironment", new EnvironmentMock("pro"));
+    when(changeEntryRepository.isNewChange(any(ChangeEntryMongo.class))).thenReturn(true);
+
+    // when
+    runner.execute();
+
+    // then
+    long changes = mongoDatabase.getCollection(CHANGELOG_COLLECTION_NAME).count(new Document());
+    assertEquals(0, changes);
+  }
+
+  @Test
+  public void shouldRunChangeSetsWhenNoEnv() {
     // given
     changeService.setChangeLogsBasePackage(AnotherMongockTestResource.class.getPackage().getName());
     TestUtils.setField(runner, "springEnvironment", null);
@@ -128,7 +136,7 @@ public class SpringMongockProfileTest extends SpringMongockTestBase {
   }
 
   @Test
-  public void shouldRunChangeSetsWhenEmptyEnv() throws Exception {
+  public void shouldRunChangeSetsWhenEmptyEnv() {
     // given
     changeService.setChangeLogsBasePackage(AnotherMongockTestResource.class.getPackage().getName());
     TestUtils.setField(runner, "springEnvironment", new EnvironmentMock());
