@@ -59,11 +59,10 @@ public class MongockTest extends IndependentDbIntegrationTestBase {
     changeService.setChangeLogsBasePackage(MongockTestResource.class.getPackage().getName());
     mongoClient = MongockTestBase.getFakeNewMongoClient(db);
 
-    Mongock temp = new Mongock(changeEntryRepository, changeService, lockChecker);
+    Mongock temp = new Mongock(changeEntryRepository, changeService, lockChecker, true);
 
     temp.addChangeSetDependency(MongoDatabase.class, db);
     temp.setEnabled(true);
-    temp.setThrowExceptionIfCannotObtainLock(true);
     runner = spy(temp);
   }
 
@@ -138,7 +137,8 @@ public class MongockTest extends IndependentDbIntegrationTestBase {
   public void shouldNotExecuteProcessWhenLockNotAcquired() {
     // given
     doThrow(new LockCheckException()).when(lockChecker).acquireLockDefault();
-    runner.setThrowExceptionIfCannotObtainLock(false);
+    TestUtils.setField(runner, "throwExceptionIfCannotObtainLock", false);
+
     // when
     runner.execute();
 

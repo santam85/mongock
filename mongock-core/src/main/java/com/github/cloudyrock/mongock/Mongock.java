@@ -21,8 +21,7 @@ public class Mongock  {
   protected final ChangeEntryRepository changeEntryRepository;
   protected final ChangeLogService changeLogService;
   protected final LockChecker lockChecker;
-
-  private boolean throwExceptionIfCannotObtainLock;
+  private final boolean throwExceptionIfCannotObtainLock;
   private boolean enabled;
   private Map<String, Object> metadata;
   private Map<Class, Object> dependencies = new HashMap<>();
@@ -30,10 +29,12 @@ public class Mongock  {
   protected Mongock(
       ChangeEntryRepository changeEntryRepository,
       ChangeLogService changeLogService,
-      LockChecker lockChecker) {
+      LockChecker lockChecker,
+      boolean throwExceptionIfCannotObtainLock) {
     this.changeEntryRepository = changeEntryRepository;
     this.changeLogService = changeLogService;
     this.lockChecker = lockChecker;
+    this.throwExceptionIfCannotObtainLock = throwExceptionIfCannotObtainLock;
   }
 
   /**
@@ -101,10 +102,7 @@ public class Mongock  {
     this.dependencies.put(dependency.getClass(), dependency);
   }
 
-  //todo move to constructor and final(only  allowed to be edited/set at building time)
-  void setThrowExceptionIfCannotObtainLock(boolean throwExceptionIfCannotObtainLock) {
-    this.throwExceptionIfCannotObtainLock = throwExceptionIfCannotObtainLock;
-  }
+
 
   //todo move to constructor and final(only  allowed to be edited/set at building time). This can be done from an static constructor
   //like Mongock.disabledInstance(...) and Mongock.instance(...)

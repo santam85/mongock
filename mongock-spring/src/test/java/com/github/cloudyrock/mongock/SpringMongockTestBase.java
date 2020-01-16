@@ -75,13 +75,13 @@ public class SpringMongockTestBase {
         changeEntryRepository,
         changeService,
         lockChecker,
+        true,
         Mockito.mock(Environment.class),
         new MongoTemplate(mongoClient, "mongocktest")
         );
 
     temp.addChangeSetDependency(mongoDatabase);
     temp.setEnabled(true);
-    temp.setThrowExceptionIfCannotObtainLock(true);
     runner = spy(temp);
 
   }

@@ -36,24 +36,21 @@ public class MigrationExecutor {
 
   public void executeMigration(String executionId, List<ChangeLogItem> changeLogs) {
     logger.info("Mongock starting the data migration sequence..");
-
     for (ChangeLogItem changeLog : changeLogs) {
       try {
-        List<ChangeSetItem> changeSets = changeLog.getChangeSetElements();
-        for (ChangeSetItem changeSet : changeSets) {
+        for (ChangeSetItem changeSet : changeLog.getChangeSetElements()) {
           executeIfNewOrRunAlways(executionId, changeLog.getInstance(), changeSet);
         }
-
       } catch (IllegalAccessException e) {
         throw new MongockException(e.getMessage(), e);
-      } catch (InvocationTargetException e) {
+      }
+      catch (InvocationTargetException e) {
         Throwable targetException = e.getTargetException();
         throw new MongockException(targetException.getMessage(), e);
       }
 
     }
   }
-
 
   private void executeIfNewOrRunAlways(String executionId, Object changelogInstance, ChangeSetItem changeSet) throws IllegalAccessException, InvocationTargetException {
     try {

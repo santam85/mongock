@@ -202,10 +202,9 @@ class TestMongockBuilder extends MongockBuilderBase<TestMongockBuilder, Mongock>
   @Override
   protected Mongock createMongockInstance() {
 //    changeLogService.setChangeLogsBasePackage(changeLogsScanPackage);
-    Mongock mongock = new Mongock(changeEntryRepository, changeService, lockChecker);
+    Mongock mongock = new Mongock(changeEntryRepository, changeService, lockChecker, throwExceptionIfCannotObtainLock);
     mongock.addChangeSetDependency(mongoDataBase);
     mongock.setEnabled(enabled);
-    mongock.setThrowExceptionIfCannotObtainLock(throwExceptionIfCannotObtainLock);
     return mongock;
   }
 

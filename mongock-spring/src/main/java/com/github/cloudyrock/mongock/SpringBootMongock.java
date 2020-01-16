@@ -15,9 +15,10 @@ public class SpringBootMongock extends Mongock implements ApplicationRunner {
   SpringBootMongock(ChangeEntryRepository changeEntryRepository,
                     SpringChangeLogService changeService,
                     LockChecker lockChecker,
+                    boolean throwExceptionIfCannotObtainLock,
                     ApplicationContext springContext,
                     MongoTemplate mongoTemplate) {
-    super(changeEntryRepository, changeService, lockChecker);
+    super(changeEntryRepository, changeService, lockChecker, throwExceptionIfCannotObtainLock);
     this.springContext = springContext;
     addChangeSetDependency(MongoTemplate.class, mongoTemplate);
   }

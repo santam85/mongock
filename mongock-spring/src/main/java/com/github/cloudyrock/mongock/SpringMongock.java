@@ -11,9 +11,10 @@ public class SpringMongock extends Mongock implements InitializingBean {
   SpringMongock(ChangeEntryRepository changeEntryRepository,
                 SpringChangeLogService changeService,
                 LockChecker lockChecker,
+                boolean throwExceptionIfCannotObtainLock,
                 Environment environment,
                 MongoTemplate mongoTemplate) {
-    super(changeEntryRepository, changeService, lockChecker);
+    super(changeEntryRepository, changeService, lockChecker, throwExceptionIfCannotObtainLock);
     addChangeSetDependency(Environment.class, environment);
     addChangeSetDependency(MongoTemplate.class, mongoTemplate);
   }

@@ -75,11 +75,11 @@ public class MongockTestBase {
     Mongock temp = new Mongock(
         changeEntryRepository,
         changeService,
-        lockChecker);
+        lockChecker,
+        true);
 
     temp.addChangeSetDependency(fakeMongoDatabase);
     temp.setEnabled(true);
-    temp.setThrowExceptionIfCannotObtainLock(true);
     runner = spy(temp);
 
   }

@@ -40,6 +40,7 @@ public class SpringMongockBuilder extends SpringMongockBuilderBase<SpringMongock
         changeEntryRepository,
         (SpringChangeLogService)createChangeService(),
         lockChecker,
+        throwExceptionIfCannotObtainLock,
         getSpringEnvironment(),
         createMongoTemplateProxy()
         );

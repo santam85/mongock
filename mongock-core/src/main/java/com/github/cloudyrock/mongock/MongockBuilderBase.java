@@ -6,7 +6,6 @@ import com.github.cloudyrock.mongock.decorator.util.MethodInvokerImpl;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoDatabase;
 
-import java.io.Closeable;
 import java.util.Map;
 
 import static com.github.cloudyrock.mongock.StringUtils.hasText;
@@ -189,7 +188,6 @@ public abstract class MongockBuilderBase<BUILDER_TYPE extends MongockBuilderBase
     MONGOCK_TYPE mongock = this.createMongockInstance();
     mongock.addChangeSetDependency(createMongoDataBaseProxy());
     mongock.setEnabled(enabled);
-    mongock.setThrowExceptionIfCannotObtainLock(throwExceptionIfCannotObtainLock);
     mongock.setMetadata(this.metadata);
     return mongock;
   }
