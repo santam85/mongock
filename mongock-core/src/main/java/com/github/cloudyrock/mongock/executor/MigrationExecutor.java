@@ -18,17 +18,18 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 public class MigrationExecutor {
 
   private static final Logger logger = LoggerFactory.getLogger(MigrationExecutor.class);
 
-  private final Map<Class, Object> dependencies;
+  private final Function<Class, Optional<Object>> dependencyRetriever;
   private final ChangeEntryRepository changeEntryRepository;
   private final Map<String, Object> metadata;
 
-  public MigrationExecutor(Map<Class, Object> dependencies, ChangeEntryRepository changeEntryRepository, Map<String, Object> metadata) {
-    this.dependencies = dependencies;
+  public MigrationExecutor(Function<Class, Optional<Object>> dependencyRetriever, ChangeEntryRepository changeEntryRepository, Map<String, Object> metadata) {
+    this.dependencyRetriever = dependencyRetriever;
     this.changeEntryRepository = changeEntryRepository;
     this.metadata = metadata;
   }
@@ -70,9 +71,11 @@ public class MigrationExecutor {
         logger.info("RE-APPLIED - {}", changeEntry);
 
       } else {
+        //TODO save Change with state passed-over
         logger.info("PASSED OVER - {}", changeEntry);
       }
     } catch (MongockException e) {
+      //todo save ChangeEntry with error
       logger.error(e.getMessage(), e);
     }
   }
@@ -97,19 +100,13 @@ public class MigrationExecutor {
     }
   }
 
-  protected Optional<Object> getDependency(Class type) {
-    return this.dependencies.entrySet().stream()
-        .filter(entrySet -> type.isAssignableFrom(entrySet.getKey()))
-        .map(Map.Entry::getValue)
-        .findFirst();
-  }
 
   private long executeChangeSetMethod(Method changeSetMethod, Object changeLogInstance)
       throws IllegalAccessException, InvocationTargetException {
     final long startingTime = System.currentTimeMillis();
     List<Object> changelogInvocationParameters = new ArrayList<>(changeSetMethod.getParameterTypes().length);
     for (Class<?> parameter : changeSetMethod.getParameterTypes()) {
-      Optional<Object> parameterOptional = this.getDependency(parameter);
+      Optional<Object> parameterOptional = dependencyRetriever.apply(parameter);
       if (parameterOptional.isPresent()) {
         changelogInvocationParameters.add(parameterOptional.get());
       } else {

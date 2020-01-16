@@ -27,7 +27,7 @@ public class SpringBootMongockTest extends SpringBootMongockTestBase {
     runner.execute();
 
     // then
-    verify(changeEntryRepository, times(11)).save(any(ChangeEntryMongo.class)); // 13 changesets saved to dbchangelog
+    verify(changeEntryRepository, times(11)).save(any(ChangeEntryMongo.class));
 
     // dbchangelog collection checking
     long change1 = mongoDatabase.getCollection(CHANGELOG_COLLECTION_NAME).count(new Document()

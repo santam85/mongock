@@ -58,7 +58,7 @@ public class Mongock  {
       try {
         lockChecker.acquireLockDefault();
         //TODO executor should be injected
-        MigrationExecutor executor = new MigrationExecutor(this.dependencies, changeEntryRepository, metadata);
+        MigrationExecutor executor = new MigrationExecutor(this::getDependency, changeEntryRepository, metadata);
         //TODO executionId may be moved to a executionIdGenerator
         String executionId = String.format("%s.%s", LocalDateTime.now().toString(), UUID.randomUUID().toString());
         executor.executeMigration(executionId, changeLogService.fetchChangeLogs());
@@ -79,21 +79,6 @@ public class Mongock  {
     }
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-  //TODO kept just for Spring child. Remove
-  @Deprecated
   protected Optional<Object> getDependency(Class type) {
     return this.dependencies.entrySet().stream()
         .filter(entrySet -> type.isAssignableFrom(entrySet.getKey()))
