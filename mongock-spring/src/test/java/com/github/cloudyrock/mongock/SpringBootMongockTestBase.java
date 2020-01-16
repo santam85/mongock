@@ -56,17 +56,12 @@ public class SpringBootMongockTestBase extends IndependentDbIntegrationTestBase 
     TestUtils.setField(changeEntryRepository, "collection", mongoDatabase.getCollection(CHANGELOG_COLLECTION_NAME));
 
     changeService.setChangeLogsBasePackage(MongockTestResource.class.getPackage().getName());
-
-    SpringBootMongock temp = new SpringBootMongock(
-        changeEntryRepository,
-        changeService,
-        lockChecker);
-
     ApplicationContext appContextMock = mock(ApplicationContext.class);
     when(appContextMock.getBean(Environment.class)).thenReturn(mock(Environment.class));
-    temp.springContext(appContextMock);
+    SpringBootMongock temp = new SpringBootMongock(changeEntryRepository, changeService, lockChecker, appContextMock, new MongoTemplate(mongoClient, "mongocktest"));
+
+
     temp.addChangeSetDependency(mongoDatabase);
-    temp.addChangeSetDependency(MongoTemplate.class, new MongoTemplate(mongoClient, "mongocktest"));
     temp.setEnabled(true);
     temp.setThrowExceptionIfCannotObtainLock(true);
     runner = spy(temp);

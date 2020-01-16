@@ -3,16 +3,23 @@ package com.github.cloudyrock.mongock;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.ApplicationContext;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.io.Closeable;
 import java.util.Optional;
 
 public class SpringBootMongock extends Mongock implements ApplicationRunner {
 
-  private ApplicationContext springContext;
+  private final ApplicationContext springContext;
 
-  SpringBootMongock(ChangeEntryRepository changeEntryRepository, SpringChangeLogService changeService, LockChecker lockChecker) {
+  SpringBootMongock(ChangeEntryRepository changeEntryRepository,
+                    SpringChangeLogService changeService,
+                    LockChecker lockChecker,
+                    ApplicationContext springContext,
+                    MongoTemplate mongoTemplate) {
     super(changeEntryRepository, changeService, lockChecker);
+    this.springContext = springContext;
+    addChangeSetDependency(MongoTemplate.class, mongoTemplate);
   }
 
   /**
@@ -34,10 +41,5 @@ public class SpringBootMongock extends Mongock implements ApplicationRunner {
     } else {
       return Optional.empty();
     }
-  }
-
-  SpringBootMongock springContext(ApplicationContext springContext) {
-    this.springContext = springContext;
-    return this;
   }
 }
