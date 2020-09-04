@@ -22,3 +22,5 @@ public class MongockContext {
     return mongockBuilder.buildInitializingBeanRunner();
   }
 }
+
+
